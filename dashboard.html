@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumni Dashboard - DSKMAA</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>DSKMAA</span>
+            </div>
+            <div class="nav-right">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <div class="user-menu">
+                    <button class="user-menu-btn" id="userMenuBtn">
+                        <img src="https://via.placeholder.com/40" alt="Profile" class="user-avatar" id="userAvatar">
+                        <span id="userName">User Name</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="#profile"><i class="fas fa-user"></i> My Profile</a>
+                        <a href="#settings"><i class="fas fa-cog"></i> Settings</a>
+                        <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+            <div class="sidebar-menu">
+                <a href="#dashboard" class="menu-item active" data-section="dashboard">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#profile" class="menu-item" data-section="profile">
+                    <i class="fas fa-user"></i>
+                    <span>My Profile</span>
+                </a>
+                <a href="#edit-profile" class="menu-item" data-section="edit-profile">
+                    <i class="fas fa-edit"></i>
+                    <span>Edit Profile</span>
+                </a>
+                <a href="#directory" class="menu-item" data-section="directory">
+                    <i class="fas fa-users"></i>
+                    <span>Alumni Directory</span>
+                </a>
+                <a href="#events" class="menu-item" data-section="events">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Events</span>
+                </a>
+                <a href="#messages" class="menu-item" data-section="messages">
+                    <i class="fas fa-envelope"></i>
+                    <span>Messages</span>
+                    <span class="badge">3</span>
+                </a>
+                <a href="#settings" class="menu-item" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="dashboard-section active">
+                <div class="section-header">
+                    <h1>Welcome Back, <span id="welcomeName">Alumni</span>!</h1>
+                    <p>Here's what's happening with your alumni network</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #4CAF50;">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>500+</h3>
+                            <p>Total Alumni</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #2196F3;">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>5</h3>
+                            <p>Upcoming Events</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #FF9800;">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>3</h3>
+                            <p>New Messages</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #9C27B0;">
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>50</h3>
+                            <p>Connections</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- Recent Activity -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-clock"></i> Recent Activity</h3>
+                        </div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                <div class="activity-icon"><i class="fas fa-user-plus"></i></div>
+                                <div class="activity-content">
+                                    <p><strong>New Alumni Joined</strong></p>
+                                    <span>5 new members joined today</span>
+                                </div>
+                                <span class="activity-time">2h ago</span>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon"><i class="fas fa-calendar"></i></div>
+                                <div class="activity-content">
+                                    <p><strong>Event Reminder</strong></p>
+                                    <span>Annual Alumni Meetup - Dec 15</span>
+                                </div>
+                                <span class="activity-time">5h ago</span>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon"><i class="fas fa-comment"></i></div>
+                                <div class="activity-content">
+                                    <p><strong>New Message</strong></p>
+                                    <span>You have 3 unread messages</span>
+                                </div>
+                                <span class="activity-time">1d ago</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Events -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-calendar-alt"></i> Upcoming Events</h3>
+                        </div>
+                        <div class="event-list">
+                            <div class="event-item">
+                                <div class="event-date">
+                                    <span class="day">15</span>
+                                    <span class="month">Dec</span>
+                                </div>
+                                <div class="event-details">
+                                    <h4>Annual Alumni Meetup</h4>
+                                    <p><i class="fas fa-map-marker-alt"></i> Campus Ground</p>
+                                    <p><i class="fas fa-clock"></i> 10:00 AM</p>
+                                </div>
+                                <button class="btn-small btn-primary">Register</button>
+                            </div>
+                            <div class="event-item">
+                                <div class="event-date">
+                                    <span class="day">25</span>
+                                    <span class="month">Jan</span>
+                                </div>
+                                <div class="event-details">
+                                    <h4>Career Guidance Seminar</h4>
+                                    <p><i class="fas fa-map-marker-alt"></i> Auditorium</p>
+                                    <p><i class="fas fa-clock"></i> 3:00 PM</p>
+                                </div>
+                                <button class="btn-small btn-primary">Register</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Profile Section -->
+            <section id="profile-section" class="dashboard-section">
+                <div class="section-header">
+                    <h1>My Profile</h1>
+                </div>
+
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <img src="https://via.placeholder.com/150" alt="Profile" id="profileAvatar">
+                        </div>
+                        <div class="profile-info">
+                            <h2 id="profileName">Alumni Name</h2>
+                            <p id="profileBatch">Dakhil 2020</p>
+                            <p id="profileProfession">Software Engineer at Tech Company</p>
+                            <div class="profile-social">
+                                <a href="#"><i class="fab fa-facebook"></i></a>
+                                <a href="#"><i class="fab fa-linkedin"></i></a>
+                                <a href="#"><i class="fas fa-envelope"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-details">
+                        <div class="detail-section">
+                            <h3><i class="fas fa-user"></i> Personal Information</h3>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <label>Email:</label>
+                                    <span id="profileEmail">user@example.com</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Phone:</label>
+                                    <span id="profilePhone">+880 1XXX-XXXXXX</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Date of Birth:</label>
+                                    <span id="profileDob">January 1, 1995</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Gender:</label>
+                                    <span id="profileGender">Male</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="detail-section">
+                            <h3><i class="fas fa-graduation-cap"></i> Academic Information</h3>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <label>Student ID:</label>
+                                    <span id="profileStudentId">12345</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Passing Year:</label>
+                                    <span id="profilePassingYear">2020</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Department:</label>
+                                    <span id="profileDepartment">Science</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="detail-section">
+                            <h3><i class="fas fa-briefcase"></i> Professional Information</h3>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <label>Organization:</label>
+                                    <span id="profileOrganization">Tech Company</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Designation:</label>
+                                    <span id="profileDesignation">Senior Engineer</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Location:</label>
+                                    <span id="profileLocation">Dhaka, Bangladesh</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Edit Profile Section -->
+            <section id="edit-profile-section" class="dashboard-section">
+                <div class="section-header">
+                    <h1>Edit Profile</h1>
+                    <p>Update your personal information</p>
+                </div>
+
+                <div class="edit-form-container">
+                    <form id="editProfileForm">
+                        <div class="form-section">
+                            <h3>Personal Information</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Full Name</label>
+                                    <input type="text" id="editFullName" placeholder="Your name">
+                                </div>
+                                <div class="form-group">
+                                    <label>Phone</label>
+                                    <input type="tel" id="editPhone" placeholder="Phone number">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Address</label>
+                                <textarea id="editAddress" rows="3" placeholder="Your address"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Professional Information</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Profession</label>
+                                    <input type="text" id="editProfession" placeholder="Your profession">
+                                </div>
+                                <div class="form-group">
+                                    <label>Organization</label>
+                                    <input type="text" id="editOrganization" placeholder="Company name">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Designation</label>
+                                    <input type="text" id="editDesignation" placeholder="Your position">
+                                </div>
+                                <div class="form-group">
+                                    <label>Work Location</label>
+                                    <input type="text" id="editWorkLocation" placeholder="City, Country">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                            <button type="button" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Alumni Directory Section -->
+            <section id="directory-section" class="dashboard-section">
+                <div class="section-header">
+                    <h1>Alumni Directory</h1>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search alumni..." id="searchAlumni">
+                    </div>
+                </div>
+
+                <div class="directory-filters">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="dakhil2020">Dakhil 2020</button>
+                    <button class="filter-btn" data-filter="alim2022">Alim 2022</button>
+                </div>
+
+                <div class="alumni-directory-grid" id="alumniDirectoryGrid">
+                    <!-- Alumni cards will be dynamically loaded -->
+                </div>
+            </section>
+
+            <!-- Other sections (Events, Messages, Settings) -->
+            <section id="events-section" class="dashboard-section">
+                <div class="section-header">
+                    <h1>Events</h1>
+                </div>
+                <p>Events content coming soon...</p>
+            </section>
+
+            <section id="messages-section" class="dashboard-section">
+                <div class="section-header">
+                    <h1>Messages</h1>
+                </div>
+                <p>Messages feature coming soon...</p>
+            </section>
+
+            <section id="settings-section" class="dashboard-section">
+                <div class="section-header">
+                    <h1>Settings</h1>
+                </div>
+                <p>Settings panel coming soon...</p>
+            </section>
+        </main>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
