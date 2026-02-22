@@ -3,384 +3,312 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alumni Dashboard - DSKMAA</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="images/logo.jpeg">
+    <link rel="shortcut icon" type="image/png" href="images/logo.jpeg">
+    <title>My Dashboard - DAF</title>
     <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="logo">
-                <i class="fas fa-graduation-cap"></i>
-                <span>DSKMAA</span>
-            </div>
-            <div class="nav-right">
-                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
-                <div class="user-menu">
-                    <button class="user-menu-btn" id="userMenuBtn">
-                        <img src="https://via.placeholder.com/40" alt="Profile" class="user-avatar" id="userAvatar">
-                        <span id="userName">User Name</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="user-dropdown" id="userDropdown">
-                        <a href="#profile"><i class="fas fa-user"></i> My Profile</a>
-                        <a href="#settings"><i class="fas fa-cog"></i> Settings</a>
-                        <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                    </div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="container">
+        <div class="nav-left">
+            <button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Toggle sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+            <a href="index.html" class="logo">
+                <img src="images/logo.jpeg" alt="DAF Logo" class="logo-img">
+                <span>DAF</span>
+            </a>
+        </div>
+        <div class="nav-right">
+            <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+            <div class="user-menu">
+                <button class="user-menu-btn" id="userMenuBtn">
+                    <img src="https://via.placeholder.com/40" alt="Profile" class="user-avatar" id="userAvatar">
+                    <span id="userName">User</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="#" data-section="profile" class="dropdown-link"><i class="fas fa-user"></i> My Profile</a>
+                    <a href="#" data-section="edit-profile" class="dropdown-link"><i class="fas fa-edit"></i> Edit Profile</a>
+                    <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
                 </div>
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
 
-    <!-- Dashboard Container -->
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="dashboard-sidebar">
-            <div class="sidebar-menu">
-                <a href="#dashboard" class="menu-item active" data-section="dashboard">
-                    <i class="fas fa-th-large"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="#profile" class="menu-item" data-section="profile">
-                    <i class="fas fa-user"></i>
-                    <span>My Profile</span>
-                </a>
-                <a href="#edit-profile" class="menu-item" data-section="edit-profile">
-                    <i class="fas fa-edit"></i>
-                    <span>Edit Profile</span>
-                </a>
-                <a href="#directory" class="menu-item" data-section="directory">
-                    <i class="fas fa-users"></i>
-                    <span>Alumni Directory</span>
-                </a>
-                <a href="#events" class="menu-item" data-section="events">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Events</span>
-                </a>
-                <a href="#messages" class="menu-item" data-section="messages">
-                    <i class="fas fa-envelope"></i>
-                    <span>Messages</span>
-                    <span class="badge">3</span>
-                </a>
-                <a href="#settings" class="menu-item" data-section="settings">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
-                </a>
+<!-- Sidebar Overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- DASHBOARD LAYOUT -->
+<div class="dashboard-container">
+
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-user-info">
+            <div class="sidebar-avatar" id="sidebarAvatarWrap">
+                <img src="https://via.placeholder.com/70" id="sidebarAvatar" alt="avatar">
             </div>
-        </aside>
+            <p class="sidebar-name" id="sidebarName">Loading...</p>
+            <p class="sidebar-id" id="sidebarAlumniId"></p>
+        </div>
+        <nav class="sidebar-menu">
+            <a class="menu-item active" data-section="profile" href="#">
+                <i class="fas fa-user"></i><span>My Profile</span>
+            </a>
+            <a class="menu-item" data-section="edit-profile" href="#">
+                <i class="fas fa-edit"></i><span>Edit Profile</span>
+            </a>
+            <a class="menu-item" data-section="events" href="#">
+                <i class="fas fa-calendar-alt"></i><span>Events</span>
+            </a>
+            <a class="menu-item" data-section="messages" href="#">
+                <i class="fas fa-envelope"></i><span>Messages</span>
+                <span class="badge msg-badge" id="msgBadge" style="display:none;"></span>
+            </a>
+        </nav>
+        <div class="sidebar-logout">
+            <a href="#" id="sidebarLogout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </aside>
 
-        <!-- Main Content -->
-        <main class="dashboard-main">
-            <!-- Dashboard Section -->
-            <section id="dashboard-section" class="dashboard-section active">
-                <div class="section-header">
-                    <h1>Welcome Back, <span id="welcomeName">Alumni</span>!</h1>
-                    <p>Here's what's happening with your alumni network</p>
+    <!-- Main Content -->
+    <main class="dashboard-main">
+
+        <!-- MY PROFILE -->
+        <section id="profile-section" class="dash-section active">
+            <div class="sec-header">
+                <h1><i class="fas fa-user"></i> My Profile</h1>
+                <button class="btn-edit-shortcut" onclick="switchSection('edit-profile')">
+                    <i class="fas fa-edit"></i> Edit Profile
+                </button>
+            </div>
+            <div class="profile-banner">
+                <div class="profile-pic-wrap">
+                    <img src="https://via.placeholder.com/120" alt="Profile" id="profileAvatar">
                 </div>
-
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: #4CAF50;">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3>500+</h3>
-                            <p>Total Alumni</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: #2196F3;">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3>5</h3>
-                            <p>Upcoming Events</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: #FF9800;">
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3>3</h3>
-                            <p>New Messages</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: #9C27B0;">
-                            <i class="fas fa-user-friends"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3>50</h3>
-                            <p>Connections</p>
-                        </div>
-                    </div>
+                <div class="profile-banner-info">
+                    <h2 id="profileName"></h2>
+                    <p id="profileBatchPill" class="batch-pill-text"></p>
+                    <p id="profileProfession" style="opacity:.9;font-size:1rem;margin-top:4px;"></p>
+                    <div class="profile-social-links" id="profileSocialLinks"></div>
                 </div>
-
-                <div class="dashboard-grid">
-                    <!-- Recent Activity -->
-                    <div class="dashboard-card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-clock"></i> Recent Activity</h3>
-                        </div>
-                        <div class="activity-list">
-                            <div class="activity-item">
-                                <div class="activity-icon"><i class="fas fa-user-plus"></i></div>
-                                <div class="activity-content">
-                                    <p><strong>New Alumni Joined</strong></p>
-                                    <span>5 new members joined today</span>
-                                </div>
-                                <span class="activity-time">2h ago</span>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-icon"><i class="fas fa-calendar"></i></div>
-                                <div class="activity-content">
-                                    <p><strong>Event Reminder</strong></p>
-                                    <span>Annual Alumni Meetup - Dec 15</span>
-                                </div>
-                                <span class="activity-time">5h ago</span>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-icon"><i class="fas fa-comment"></i></div>
-                                <div class="activity-content">
-                                    <p><strong>New Message</strong></p>
-                                    <span>You have 3 unread messages</span>
-                                </div>
-                                <span class="activity-time">1d ago</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Upcoming Events -->
-                    <div class="dashboard-card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-calendar-alt"></i> Upcoming Events</h3>
-                        </div>
-                        <div class="event-list">
-                            <div class="event-item">
-                                <div class="event-date">
-                                    <span class="day">15</span>
-                                    <span class="month">Dec</span>
-                                </div>
-                                <div class="event-details">
-                                    <h4>Annual Alumni Meetup</h4>
-                                    <p><i class="fas fa-map-marker-alt"></i> Campus Ground</p>
-                                    <p><i class="fas fa-clock"></i> 10:00 AM</p>
-                                </div>
-                                <button class="btn-small btn-primary">Register</button>
-                            </div>
-                            <div class="event-item">
-                                <div class="event-date">
-                                    <span class="day">25</span>
-                                    <span class="month">Jan</span>
-                                </div>
-                                <div class="event-details">
-                                    <h4>Career Guidance Seminar</h4>
-                                    <p><i class="fas fa-map-marker-alt"></i> Auditorium</p>
-                                    <p><i class="fas fa-clock"></i> 3:00 PM</p>
-                                </div>
-                                <button class="btn-small btn-primary">Register</button>
-                            </div>
-                        </div>
+                <div class="alumni-id-badge" id="profileAlumniIdBadge">
+                    <i class="fas fa-id-badge"></i> <span id="profileAlumniId"></span>
+                </div>
+            </div>
+            <div class="profile-cards">
+                <div class="info-card">
+                    <h3><i class="fas fa-user"></i> Personal Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><label>Email</label><span id="pEmail"></span></div>
+                        <div class="info-item"><label>Phone</label><span id="pPhone"></span></div>
+                        <div class="info-item"><label>Date of Birth</label><span id="pDob"></span></div>
+                        <div class="info-item"><label>Gender</label><span id="pGender"></span></div>
+                        <div class="info-item full"><label>Address</label><span id="pAddress"></span></div>
                     </div>
                 </div>
-            </section>
-
-            <!-- Profile Section -->
-            <section id="profile-section" class="dashboard-section">
-                <div class="section-header">
-                    <h1>My Profile</h1>
+                <div class="info-card">
+                    <h3><i class="fas fa-graduation-cap"></i> Academic Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><label>Batch</label><span id="pBatch"></span></div>
+                        <div class="info-item"><label>Passing Year</label><span id="pPassingYear"></span></div>
+                        <div class="info-item"><label>Department</label><span id="pDepartment"></span></div>
+                        <div class="info-item"><label>Student ID</label><span id="pStudentId"></span></div>
+                    </div>
                 </div>
+                <div class="info-card">
+                    <h3><i class="fas fa-briefcase"></i> Professional Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><label>Profession</label><span id="pProfession"></span></div>
+                        <div class="info-item"><label>Organization</label><span id="pOrganization"></span></div>
+                        <div class="info-item"><label>Designation</label><span id="pDesignation"></span></div>
+                        <div class="info-item"><label>Work Location</label><span id="pWorkLocation"></span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-                <div class="profile-container">
-                    <div class="profile-header">
-                        <div class="profile-avatar">
-                            <img src="https://via.placeholder.com/150" alt="Profile" id="profileAvatar">
-                        </div>
-                        <div class="profile-info">
-                            <h2 id="profileName">Alumni Name</h2>
-                            <p id="profileBatch">Dakhil 2020</p>
-                            <p id="profileProfession">Software Engineer at Tech Company</p>
-                            <div class="profile-social">
-                                <a href="#"><i class="fab fa-facebook"></i></a>
-                                <a href="#"><i class="fab fa-linkedin"></i></a>
-                                <a href="#"><i class="fas fa-envelope"></i></a>
+        <!-- EDIT PROFILE -->
+        <section id="edit-profile-section" class="dash-section">
+            <div class="sec-header">
+                <h1><i class="fas fa-edit"></i> Edit Profile</h1>
+            </div>
+            <div class="edit-form-container">
+                <form id="editProfileForm">
+                    <div class="form-section">
+                        <h3><i class="fas fa-camera"></i> Profile Picture</h3>
+                        <div class="profile-pic-edit">
+                            <div class="current-pic">
+                                <img src="https://via.placeholder.com/120" alt="Profile" id="editProfilePic">
+                            </div>
+                            <div class="pic-upload">
+                                <label for="profilePicUpload" class="upload-label">
+                                    <i class="fas fa-upload"></i> Choose New Picture
+                                </label>
+                                <input type="file" id="profilePicUpload" accept="image/*" style="display:none;">
+                                <p class="help-text">JPG, PNG or GIF (Max 2MB)</p>
                             </div>
                         </div>
                     </div>
-
-                    <div class="profile-details">
-                        <div class="detail-section">
-                            <h3><i class="fas fa-user"></i> Personal Information</h3>
-                            <div class="detail-grid">
-                                <div class="detail-item">
-                                    <label>Email:</label>
-                                    <span id="profileEmail">user@example.com</span>
-                                </div>
-                                <div class="detail-item">
-                                    <label>Phone:</label>
-                                    <span id="profilePhone">+880 1XXX-XXXXXX</span>
-                                </div>
-                                <div class="detail-item">
-                                    <label>Date of Birth:</label>
-                                    <span id="profileDob">January 1, 1995</span>
-                                </div>
-                                <div class="detail-item">
-                                    <label>Gender:</label>
-                                    <span id="profileGender">Male</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="detail-section">
-                            <h3><i class="fas fa-graduation-cap"></i> Academic Information</h3>
-                            <div class="detail-grid">
-                                <div class="detail-item">
-                                    <label>Student ID:</label>
-                                    <span id="profileStudentId">12345</span>
-                                </div>
-                                <div class="detail-item">
-                                    <label>Passing Year:</label>
-                                    <span id="profilePassingYear">2020</span>
-                                </div>
-                                <div class="detail-item">
-                                    <label>Department:</label>
-                                    <span id="profileDepartment">Science</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="detail-section">
-                            <h3><i class="fas fa-briefcase"></i> Professional Information</h3>
-                            <div class="detail-grid">
-                                <div class="detail-item">
-                                    <label>Organization:</label>
-                                    <span id="profileOrganization">Tech Company</span>
-                                </div>
-                                <div class="detail-item">
-                                    <label>Designation:</label>
-                                    <span id="profileDesignation">Senior Engineer</span>
-                                </div>
-                                <div class="detail-item">
-                                    <label>Location:</label>
-                                    <span id="profileLocation">Dhaka, Bangladesh</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Edit Profile Section -->
-            <section id="edit-profile-section" class="dashboard-section">
-                <div class="section-header">
-                    <h1>Edit Profile</h1>
-                    <p>Update your personal information</p>
-                </div>
-
-                <div class="edit-form-container">
-                    <form id="editProfileForm">
-                        <div class="form-section">
-                            <h3>Personal Information</h3>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Full Name</label>
-                                    <input type="text" id="editFullName" placeholder="Your name">
-                                </div>
-                                <div class="form-group">
-                                    <label>Phone</label>
-                                    <input type="tel" id="editPhone" placeholder="Phone number">
-                                </div>
+                    <div class="form-section">
+                        <h3><i class="fas fa-user"></i> Personal Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Full Name <span class="req">*</span></label>
+                                <input type="text" id="editFullName" required placeholder="Your full name">
                             </div>
                             <div class="form-group">
-                                <label>Address</label>
-                                <textarea id="editAddress" rows="3" placeholder="Your address"></textarea>
+                                <label>Date of Birth</label>
+                                <input type="date" id="editDob">
                             </div>
                         </div>
-
-                        <div class="form-section">
-                            <h3>Professional Information</h3>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Profession</label>
-                                    <input type="text" id="editProfession" placeholder="Your profession">
-                                </div>
-                                <div class="form-group">
-                                    <label>Organization</label>
-                                    <input type="text" id="editOrganization" placeholder="Company name">
-                                </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Gender</label>
+                                <select id="editGender">
+                                    <option value="">Select Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
                             </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Designation</label>
-                                    <input type="text" id="editDesignation" placeholder="Your position">
-                                </div>
-                                <div class="form-group">
-                                    <label>Work Location</label>
-                                    <input type="text" id="editWorkLocation" placeholder="City, Country">
-                                </div>
+                            <div class="form-group">
+                                <label>Phone <span class="req">*</span></label>
+                                <input type="tel" id="editPhone" required placeholder="+880 1XXX-XXXXXX">
                             </div>
                         </div>
-
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Save Changes
-                            </button>
-                            <button type="button" class="btn btn-secondary">
-                                <i class="fas fa-times"></i> Cancel
-                            </button>
+                        <div class="form-group">
+                            <label>Present Address</label>
+                            <textarea id="editAddress" rows="3" placeholder="Your current address"></textarea>
                         </div>
-                    </form>
-                </div>
-            </section>
-
-            <!-- Alumni Directory Section -->
-            <section id="directory-section" class="dashboard-section">
-                <div class="section-header">
-                    <h1>Alumni Directory</h1>
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search alumni..." id="searchAlumni">
                     </div>
-                </div>
+                    <div class="form-section">
+                        <h3><i class="fas fa-graduation-cap"></i> Academic Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Student ID</label>
+                                <input type="text" id="editStudentId" placeholder="Your student ID">
+                            </div>
+                            <div class="form-group">
+                                <label>Batch <span class="req">*</span></label>
+                                <select id="editBatch" required>
+                                    <option value="">Select Batch</option>
+                                    <option value="dakhil2020">Dakhil 2020</option>
+                                    <option value="alim2022">Alim 2022</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Department</label>
+                                <input type="text" id="editDepartment" placeholder="e.g., Science, Arts">
+                            </div>
+                            <div class="form-group">
+                                <label>Passing Year</label>
+                                <input type="text" id="editPassingYear" placeholder="e.g., 2020">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <h3><i class="fas fa-briefcase"></i> Professional Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Profession <span class="req">*</span></label>
+                                <input type="text" id="editProfession" required placeholder="e.g., Teacher, Engineer">
+                            </div>
+                            <div class="form-group">
+                                <label>Organization</label>
+                                <input type="text" id="editOrganization" placeholder="Company/Institution name">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Designation</label>
+                                <input type="text" id="editDesignation" placeholder="Your job title">
+                            </div>
+                            <div class="form-group">
+                                <label>Work Location</label>
+                                <input type="text" id="editWorkLocation" placeholder="City, Country">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <h3><i class="fas fa-share-alt"></i> Social Media</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i class="fab fa-facebook"></i> Facebook</label>
+                                <input type="url" id="editFacebook" placeholder="https://facebook.com/yourprofile">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fab fa-linkedin"></i> LinkedIn</label>
+                                <input type="url" id="editLinkedin" placeholder="https://linkedin.com/in/yourprofile">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <h3><i class="fas fa-lock"></i> Change Password <small style="font-weight:400;font-size:0.8rem;color:#999;">(optional)</small></h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Current Password</label>
+                                <input type="password" id="editCurrentPassword" placeholder="Enter current password">
+                            </div>
+                            <div class="form-group">
+                                <label>New Password</label>
+                                <input type="password" id="editNewPassword" placeholder="Enter new password">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Confirm New Password</label>
+                                <input type="password" id="editConfirmPassword" placeholder="Confirm new password">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Changes</button>
+                        <button type="button" class="btn btn-secondary" id="cancelEditBtn"><i class="fas fa-times"></i> Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </section>
 
-                <div class="directory-filters">
-                    <button class="filter-btn active" data-filter="all">All</button>
-                    <button class="filter-btn" data-filter="dakhil2020">Dakhil 2020</button>
-                    <button class="filter-btn" data-filter="alim2022">Alim 2022</button>
+        <!-- EVENTS -->
+        <section id="events-section" class="dash-section">
+            <div class="sec-header">
+                <h1><i class="fas fa-calendar-alt"></i> Events</h1>
+            </div>
+            <div id="eventsContainer" class="events-list">
+                <div class="empty-state">
+                    <i class="fas fa-calendar-times"></i>
+                    <p>No events at the moment. Check back soon!</p>
                 </div>
+            </div>
+        </section>
 
-                <div class="alumni-directory-grid" id="alumniDirectoryGrid">
-                    <!-- Alumni cards will be dynamically loaded -->
+        <!-- MESSAGES -->
+        <section id="messages-section" class="dash-section">
+            <div class="sec-header">
+                <h1><i class="fas fa-envelope"></i> Messages</h1>
+            </div>
+            <div id="messagesContainer" class="messages-list">
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>No messages yet.</p>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- Other sections (Events, Messages, Settings) -->
-            <section id="events-section" class="dashboard-section">
-                <div class="section-header">
-                    <h1>Events</h1>
-                </div>
-                <p>Events content coming soon...</p>
-            </section>
+    </main>
+</div>
 
-            <section id="messages-section" class="dashboard-section">
-                <div class="section-header">
-                    <h1>Messages</h1>
-                </div>
-                <p>Messages feature coming soon...</p>
-            </section>
+<!-- Toast -->
+<div id="dashToast" class="dash-toast"></div>
 
-            <section id="settings-section" class="dashboard-section">
-                <div class="section-header">
-                    <h1>Settings</h1>
-                </div>
-                <p>Settings panel coming soon...</p>
-            </section>
-        </main>
-    </div>
-
-    <script src="dashboard.js"></script>
+<script src="dashboard.js"></script>
 </body>
 </html>

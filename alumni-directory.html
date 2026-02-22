@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumni Directory - DAF</title>
+    <link rel="icon" type="image/png" href="images/logo.jpeg">
+    <link rel="shortcut icon" type="image/png" href="images/logo.jpeg">
+    <link rel="apple-touch-icon" href="images/logo.jpeg">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <img src="images/logo.jpeg" alt="DAF Logo" class="logo-img">
+                <span>DAF</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" data-en="Home" data-bn="হোম">Home</a></li>
+                <li><a href="index.html#about" data-en="About" data-bn="আমাদের সম্পর্কে">About</a></li>
+                <li><a href="alumni-directory.html" class="active" data-en="Alumni Directory" data-bn="আলামনাই তালিকা">Alumni Directory</a></li>
+                <li><a href="index.html#events" data-en="Events" data-bn="ইভেন্ট">Events</a></li>
+                <li><a href="index.html#gallery" data-en="Gallery" data-bn="গ্যালারি">Gallery</a></li>
+                <li><a href="index.html#contact" data-en="Contact" data-bn="যোগাযোগ">Contact</a></li>
+            </ul>
+            <div class="language-switcher">
+                <button class="lang-btn active" data-lang="en">English</button>
+                <button class="lang-btn" data-lang="bn">বাংলা</button>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Alumni Directory Section -->
+    <section class="alumni-directory-page">
+        <div class="container">
+            <div class="section-header">
+                <h1 data-en="Alumni Directory" data-bn="আলামনাই তালিকা">Alumni Directory</h1>
+                <div class="underline"></div>
+                <p data-en="Complete list of our proud alumni members" data-bn="আমাদের গর্বিত প্রাক্তন শিক্ষার্থীদের সম্পূর্ণ তালিকা">Complete list of our proud alumni members</p>
+            </div>
+
+            <!-- Login Banner for Guests -->
+            <div id="guestLoginBanner" style="display:none;background:linear-gradient(135deg,#fff8e1,#e8f4e8);border:1.5px solid #ffd54f;border-radius:12px;padding:16px 24px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+                <div>
+                    <p style="margin:0;font-size:15px;font-weight:700;color:#555;"><i class="fas fa-info-circle" style="color:#f39c12;margin-right:8px;"></i>You are viewing a limited version of the Alumni Directory.</p>
+                    <p style="margin:4px 0 0;font-size:13px;color:#777;">Login করলে সকল alumni-এর সম্পূর্ণ তথ্য (phone, email, location, social links) দেখতে পাবেন।</p>
+                </div>
+                <a href="login.html" style="background:#2c7a4b;color:#fff;padding:9px 26px;border-radius:24px;font-weight:700;font-size:14px;text-decoration:none;white-space:nowrap;"><i class="fas fa-sign-in-alt" style="margin-right:6px;"></i>Login Now</a>
+            </div>
+            <script>if(!sessionStorage.getItem('currentUser')){var b=document.getElementById('guestLoginBanner');if(b)b.style.display='flex';}</script>
+
+            <!-- Search and Filter -->
+            <div class="directory-controls">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchAlumni" placeholder="Search by name, profession, or location..." data-en-placeholder="Search by name, profession, or location..." data-bn-placeholder="নাম, পেশা বা স্থান দিয়ে খুঁজুন...">
+                </div>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-batch="all" data-en="All Alumni" data-bn="সকল">All Alumni</button>
+                    <button class="filter-btn" data-batch="dakhil2020" data-en="Dakhil 2020" data-bn="দাখিল ২০২০">Dakhil 2020</button>
+                    <button class="filter-btn" data-batch="alim2022" data-en="Alim 2022" data-bn="আলিম ২০২২">Alim 2022</button>
+                </div>
+            </div>
+
+            <!-- Alumni Grid -->
+            <div class="alumni-directory-grid">
+                <!-- Alumni cards will be dynamically loaded from localStorage -->
+                <div class="no-alumni-message" style="grid-column: 1/-1; text-align: center; padding: 3rem; display: none;">
+                    <i class="fas fa-users" style="font-size: 4rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                    <h3>No Alumni Found</h3>
+                    <p>No registered alumni members yet. Be the first to register!</p>
+                    <a href="register.html" class="btn btn-primary" style="margin-top: 1rem;">Register Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <img src="images/logo.jpeg" alt="DAF Logo" class="footer-logo-img">
+                        <h3>DAF</h3>
+                    </div>
+                    <p data-en="Darunnazat Alumni Forum (Dakhil 2020 and Alim 2022)" data-bn="দারুননাজাত অ্যালামনাই ফোরাম (দাখিল ২০২০ এবং আলিম ২০২২)">Darunnazat Alumni Forum (Dakhil 2020 and Alim 2022)</p>
+                </div>
+                <div class="footer-section">
+                    <h3 data-en="Quick Links" data-bn="দ্রুত লিঙ্ক">Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html" data-en="Home" data-bn="হোম">Home</a></li>
+                        <li><a href="index.html#about" data-en="About" data-bn="আমাদের সম্পর্কে">About</a></li>
+                        <li><a href="alumni-directory.html" data-en="Alumni Directory" data-bn="আলামনাই তালিকা">Alumni Directory</a></li>
+                        <li><a href="index.html#events" data-en="Events" data-bn="ইভেন্ট">Events</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3 data-en="Follow Us" data-bn="আমাদের অনুসরণ করুন">Follow Us</h3>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p data-en="&copy; 2025 DAF - Darunnazat Alumni Forum (Dakhil 2020 and Alim 2022). All Rights Reserved." data-bn="&copy; ২০২৫ DAF - দারুননাজাত অ্যালামনাই ফোরাম (দাখিল ২০২০ এবং আলিম ২০২২)। সর্বস্বত্ব সংরক্ষিত।">&copy; 2025 DAF - Darunnazat Alumni Forum (Dakhil 2020 and Alim 2022). All Rights Reserved.</p>
+                <p class="developer-credit">Developed by <a href="https://mdimranhossainn.me/" target="_blank">MD Imran Hossain</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="alumni-directory.js"></script>
+</body>
+</html>

@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - DAF</title>
+    <link rel="icon" type="image/png" href="images/logo.jpeg">
+    <link rel="shortcut icon" type="image/png" href="images/logo.jpeg">
+    <link rel="apple-touch-icon" href="images/logo.jpeg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-logo">
+            <img src="images/logo.jpeg" alt="DAF Logo">
+            <div>
+                <span class="site-name">DAF</span>
+                <span class="admin-tag">Admin Panel</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" data-section="dashboard">
+                <i class="fas fa-th-large"></i><span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item" data-section="users">
+                <i class="fas fa-users"></i><span>All Users</span>
+                <span class="count-badge" id="sidebarUserCount">0</span>
+            </a>
+            <a href="#" class="nav-item" data-section="dakhil">
+                <i class="fas fa-graduation-cap"></i><span>Dakhil 2020</span>
+            </a>
+            <a href="#" class="nav-item" data-section="alim">
+                <i class="fas fa-user-graduate"></i><span>Alim 2022</span>
+            </a>
+            <a href="#" class="nav-item" data-section="announcements">
+                <i class="fas fa-bullhorn"></i><span>Announcements</span>
+            </a>
+            <a href="#" class="nav-item" data-section="gallery">
+                <i class="fas fa-images"></i><span>Gallery</span>
+            </a>
+            <a href="#" class="nav-item" data-section="hero">
+                <i class="fas fa-image"></i><span>Hero Slides</span>
+            </a>
+            <a href="#" class="nav-item" data-section="about">
+                <i class="fas fa-info-circle"></i><span>About Us</span>
+            </a>
+            <a href="#" class="nav-item" data-section="contact">
+                <i class="fas fa-address-book"></i><span>Contact Us</span>
+            </a>
+            <a href="#" class="nav-item" data-section="inbox">
+                <i class="fas fa-inbox"></i><span>Message Inbox</span>
+                <span class="count-badge" id="sidebarInboxCount" style="display:none;">0</span>
+            </a>
+            <a href="#" class="nav-item" data-section="settings">
+                <i class="fas fa-cog"></i><span>Site Settings</span>
+            </a>
+            <div class="sidebar-divider"></div>
+            <a href="index.html" class="nav-item" target="_blank">
+                <i class="fas fa-globe"></i><span>View Website</span>
+            </a>
+            <a href="#" class="nav-item danger" id="adminLogoutBtn">
+                <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="admin-main" id="adminMain">
+
+        <!-- Top Bar -->
+        <header class="admin-topbar">
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="topbar-title" id="topbarTitle">Dashboard</div>
+            <div class="topbar-right">
+                <span class="admin-name"><i class="fas fa-user-shield"></i> <span id="adminNameDisplay">Admin</span></span>
+            </div>
+        </header>
+
+        <!-- ===== DASHBOARD SECTION ===== -->
+        <section class="admin-section active" id="section-dashboard">
+            <div class="section-header">
+                <h2><i class="fas fa-th-large"></i> Dashboard Overview</h2>
+                <p>Welcome to DAF Admin Panel</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card blue">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-info">
+                        <h3 id="statTotalUsers">0</h3>
+                        <p>Total Registered Users</p>
+                    </div>
+                </div>
+                <div class="stat-card green">
+                    <div class="stat-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <div class="stat-info">
+                        <h3 id="statDakhil">0</h3>
+                        <p>Dakhil 2020 Batch</p>
+                    </div>
+                </div>
+                <div class="stat-card orange">
+                    <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
+                    <div class="stat-info">
+                        <h3 id="statAlim">0</h3>
+                        <p>Alim 2022 Batch</p>
+                    </div>
+                </div>
+                <div class="stat-card purple">
+                    <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+                    <div class="stat-info">
+                        <h3 id="statToday">0</h3>
+                        <p>Registered Today</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Registrations -->
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-clock"></i> Recent Registrations</h3>
+                    <button class="btn-sm btn-primary" onclick="showSection('users')">View All</button>
+                </div>
+                <div class="table-wrap">
+                    <table class="admin-table" id="recentTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Batch</th>
+                                <th>Profession</th>
+                                <th>Registered</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== ALL USERS SECTION ===== -->
+        <section class="admin-section" id="section-users">
+            <div class="section-header">
+                <h2><i class="fas fa-users"></i> All Registered Users</h2>
+                <p>View, manage and delete user accounts</p>
+            </div>
+
+            <div class="admin-card">
+                <div class="card-header">
+                    <div class="search-filter">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="userSearch" placeholder="Search by name, email, alumni ID, profession...">
+                        </div>
+                        <select id="batchFilter">
+                            <option value="all">All Batches</option>
+                            <option value="dakhil2020">Dakhil 2020</option>
+                            <option value="alim2022">Alim 2022</option>
+                        </select>
+                    </div>
+                    <div class="card-actions">
+                        <span class="total-badge" id="userCountBadge">0 Users</span>
+                        <button class="btn-sm btn-danger" onclick="deleteAllUsers()">
+                            <i class="fas fa-trash-alt"></i> Delete All
+                        </button>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table class="admin-table" id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Photo</th>
+                                <th>Name</th>
+                                <th>Alumni ID</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Batch</th>
+                                <th>Profession</th>
+                                <th>Location</th>
+                                <th>Registered</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== DAKHIL 2020 SECTION ===== -->
+        <section class="admin-section" id="section-dakhil">
+            <div class="section-header">
+                <h2><i class="fas fa-graduation-cap"></i> Dakhil 2020 Batch</h2>
+                <p>All alumni from Dakhil 2020 batch</p>
+            </div>
+            <div class="admin-card">
+                <div class="card-header">
+                    <span class="total-badge" id="dakhilCountBadge">0 Members</span>
+                </div>
+                <div class="table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr><th>#</th><th>Photo</th><th>Name</th><th>Alumni ID</th><th>Email</th><th>Phone</th><th>Profession</th><th>Location</th><th>Action</th></tr>
+                        </thead>
+                        <tbody id="dakhilTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== ALIM 2022 SECTION ===== -->
+        <section class="admin-section" id="section-alim">
+            <div class="section-header">
+                <h2><i class="fas fa-user-graduate"></i> Alim 2022 Batch</h2>
+                <p>All alumni from Alim 2022 batch</p>
+            </div>
+            <div class="admin-card">
+                <div class="card-header">
+                    <span class="total-badge" id="alimCountBadge">0 Members</span>
+                </div>
+                <div class="table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr><th>#</th><th>Photo</th><th>Name</th><th>Alumni ID</th><th>Email</th><th>Phone</th><th>Profession</th><th>Location</th><th>Action</th></tr>
+                        </thead>
+                        <tbody id="alimTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== ANNOUNCEMENTS SECTION ===== -->
+        <section class="admin-section" id="section-announcements">
+            <div class="section-header">
+                <h2><i class="fas fa-bullhorn"></i> Announcements</h2>
+                <p>Manage site announcements and notices</p>
+            </div>
+
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-plus-circle"></i> Add New Announcement</h3>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Announcement Title</label>
+                        <input type="text" id="announcementTitle" placeholder="e.g. Annual Reunion 2025">
+                    </div>
+                    <div class="form-group full">
+                        <label>Message</label>
+                        <textarea id="announcementMsg" rows="4" placeholder="Write your announcement here..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select id="announcementType">
+                            <option value="info">Info</option>
+                            <option value="success">Success</option>
+                            <option value="warning">Warning</option>
+                            <option value="danger">Important</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="announcementDate">
+                    </div>
+                    <div class="form-group full">
+                        <label>Link URL <span style="font-weight:400;color:#888;">— optional, opens when clicked on the bar</span></label>
+                        <input type="url" id="announcementLink" placeholder="https://example.com">
+                    </div>
+                    <div class="form-group full">
+                        <button class="btn-primary" onclick="saveAnnouncement()">
+                            <i class="fas fa-save"></i> Save Announcement
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-list"></i> Existing Announcements</h3>
+                </div>
+                <div id="announcementsList"></div>
+            </div>
+        </section>
+        </section>
+
+        <!-- ===== CONTACT US SECTION ===== -->
+        <section class="admin-section" id="section-contact">
+            <div class="section-header">
+                <h2><i class="fas fa-address-book"></i> Contact Us</h2>
+                <p>Edit the contact information shown on the home page</p>
+            </div>
+
+            <div class="admin-card">
+                <div class="card-header"><h3><i class="fas fa-map-marker-alt"></i> Address</h3></div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Address (English)</label>
+                        <textarea id="ctcAddrEn" rows="2" placeholder="e.g. DAF, East Boxnagar, Demra, Dhaka"></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>Address (Bangla)</label>
+                        <textarea id="ctcAddrBn" rows="2" placeholder="বাংলা ঠিকানা..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <div class="card-header"><h3><i class="fas fa-phone"></i> Phone &amp; Email</h3></div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="text" id="ctcPhone" placeholder="e.g. +880 963 851 0916">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="ctcEmail" placeholder="e.g. alumni@gmail.com">
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <div class="card-header"><h3><i class="fas fa-share-alt"></i> Social Media Links</h3></div>
+                <p style="font-size:12px;color:#888;padding:0 16px 10px;"><i class="fas fa-info-circle" style="margin-right:4px;"></i>These links update both the <strong>Contact section</strong> and the <strong>Follow Us</strong> footer on the website. Leave blank to hide an icon.</p>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class="fab fa-facebook" style="color:#1877f2;margin-right:6px;"></i>Facebook URL</label>
+                        <input type="url" id="ctcFacebook" placeholder="https://facebook.com/...">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fab fa-twitter" style="color:#1da1f2;margin-right:6px;"></i>Twitter / X URL</label>
+                        <input type="url" id="ctcTwitter" placeholder="https://twitter.com/...">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fab fa-linkedin" style="color:#0a66c2;margin-right:6px;"></i>LinkedIn URL</label>
+                        <input type="url" id="ctcLinkedin" placeholder="https://linkedin.com/...">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fab fa-instagram" style="color:#e1306c;margin-right:6px;"></i>Instagram URL</label>
+                        <input type="url" id="ctcInstagram" placeholder="https://instagram.com/...">
+                    </div>
+                    <div class="form-group full">
+                        <button class="btn-primary" onclick="saveContactSection()">
+                            <i class="fas fa-save"></i> Save Contact Info
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== MESSAGE INBOX SECTION ===== -->
+        <section class="admin-section" id="section-inbox">
+            <div class="section-header">
+                <h2><i class="fas fa-inbox"></i> Message Inbox</h2>
+                <p>Messages sent by visitors from the Contact Us form</p>
+            </div>
+            <div id="inboxMsgContainer"></div>
+        </section>
+
+        <!-- ===== ABOUT US SECTION ===== -->
+        <section class="admin-section" id="section-about">
+            <div class="section-header">
+                <h2><i class="fas fa-info-circle"></i> About Us</h2>
+                <p>Edit the About Us section content shown on the home page</p>
+            </div>
+
+            <div class="admin-card">
+                <div class="card-header"><h3><i class="fas fa-align-left"></i> Description</h3></div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>About Text (English)</label>
+                        <textarea id="aboutDescEn" rows="4" placeholder="English description..."></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>About Text (Bangla)</label>
+                        <textarea id="aboutDescBn" rows="4" placeholder="বাংলা বিবরণ..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <div class="card-header"><h3><i class="fas fa-chart-bar"></i> Statistics</h3></div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Stat 1 — Value</label>
+                        <input type="text" id="aboutStat1Val" placeholder="e.g. ৫০০+">
+                    </div>
+                    <div class="form-group">
+                        <label>Stat 1 — Label (English)</label>
+                        <input type="text" id="aboutStat1LblEn" placeholder="e.g. Alumni Members">
+                    </div>
+                    <div class="form-group">
+                        <label>Stat 1 — Label (Bangla)</label>
+                        <input type="text" id="aboutStat1LblBn" placeholder="e.g. আলামনাই সদস্য">
+                    </div>
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <label>Stat 2 — Value</label>
+                        <input type="text" id="aboutStat2Val" placeholder="e.g. ২০+">
+                    </div>
+                    <div class="form-group">
+                        <label>Stat 2 — Label (English)</label>
+                        <input type="text" id="aboutStat2LblEn" placeholder="e.g. Events Organized">
+                    </div>
+                    <div class="form-group">
+                        <label>Stat 2 — Label (Bangla)</label>
+                        <input type="text" id="aboutStat2LblBn" placeholder="e.g. ইভেন্ট আয়োজিত">
+                    </div>
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <label>Stat 3 — Value</label>
+                        <input type="text" id="aboutStat3Val" placeholder="e.g. ১৫+">
+                    </div>
+                    <div class="form-group">
+                        <label>Stat 3 — Label (English)</label>
+                        <input type="text" id="aboutStat3LblEn" placeholder="e.g. Social Services">
+                    </div>
+                    <div class="form-group">
+                        <label>Stat 3 — Label (Bangla)</label>
+                        <input type="text" id="aboutStat3LblBn" placeholder="e.g. সমাজসেবা কার্যক্রম">
+                    </div>
+                    <div class="form-group"></div>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <div class="card-header"><h3><i class="fas fa-bullseye"></i> Mission &amp; Vision</h3></div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Mission Text (English)</label>
+                        <textarea id="aboutMissionEn" rows="3" placeholder="Our mission..."></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>Mission Text (Bangla)</label>
+                        <textarea id="aboutMissionBn" rows="3" placeholder="আমাদের লক্ষ্য..."></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>Vision Text (English)</label>
+                        <textarea id="aboutVisionEn" rows="3" placeholder="Our vision..."></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>Vision Text (Bangla)</label>
+                        <textarea id="aboutVisionBn" rows="3" placeholder="আমাদের স্বপ্ন..."></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <button class="btn-primary" onclick="saveAboutSection()">
+                            <i class="fas fa-save"></i> Save All Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== HERO SLIDES SECTION ===== -->
+        <section class="admin-section" id="section-hero">
+            <div class="section-header">
+                <h2><i class="fas fa-image"></i> Hero Slides</h2>
+                <p>Upload photos that display as a slideshow on the home page banner</p>
+            </div>
+
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-plus-circle"></i> Add Slides</h3>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Select Photos <span style="font-weight:400;color:#888;">— multiple allowed, any size</span></label>
+                        <div class="file-upload-area" id="heroUploadArea">
+                            <i class="fas fa-cloud-upload-alt" style="font-size:36px;color:#aaa;display:block;margin-bottom:10px;"></i>
+                            <span id="heroUploadLabel" style="font-size:15px;">Click to choose photos or drag &amp; drop here</span>
+                            <input type="file" id="heroFileInput" accept="image/*" multiple style="display:none;">
+                        </div>
+                        <div id="heroUploadProgress" style="display:none;margin-top:10px;">
+                            <div style="background:#e9e9e9;border-radius:6px;height:8px;overflow:hidden;">
+                                <div id="heroProgressBar" style="height:100%;background:var(--primary);width:0%;transition:width 0.2s;"></div>
+                            </div>
+                            <p id="heroProgressText" style="font-size:12px;color:#666;margin-top:5px;"></p>
+                        </div>
+                        <div id="heroPreviewRow" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-top:10px;"></div>
+                    </div>
+                    <div class="form-group full">
+                        <button class="btn-primary" id="heroAddBtn" onclick="addHeroSlides()" disabled style="opacity:0.5;">
+                            <i class="fas fa-plus"></i> Add to Slideshow
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+                    <h3><i class="fas fa-th"></i> Current Slides <span id="heroSlideCount" style="font-size:13px;font-weight:400;color:#888;"></span></h3>
+                    <button class="btn-sm btn-danger" onclick="clearAllHeroSlides()"><i class="fas fa-trash"></i> Clear All</button>
+                </div>
+                <p style="font-size:12px;color:#aaa;padding:0 16px 8px;">Drag to reorder &nbsp;|&nbsp; First photo = first slide</p>
+                <div id="heroSlideGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;padding:16px;"></div>
+            </div>
+        </section>
+
+        <!-- ===== GALLERY SECTION ===== -->
+        <section class="admin-section" id="section-gallery">
+            <div class="section-header">
+                <h2><i class="fas fa-images"></i> Photo Gallery</h2>
+                <p>Add and manage photos shown on the website gallery</p>
+            </div>
+
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-plus-circle"></i> Add Photos</h3>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Select Photos <span style="font-weight:400;color:#888;">— jpg, png, webp — unlimited, multiple allowed</span></label>
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <i class="fas fa-cloud-upload-alt" style="font-size:36px;color:#aaa;display:block;margin-bottom:10px;"></i>
+                            <span id="fileUploadLabel" style="font-size:15px;">Click to choose photos or drag &amp; drop here</span>
+                            <span style="font-size:12px;color:#bbb;margin-top:4px;">Supports JPG, PNG, WEBP &mdash; any size</span>
+                            <input type="file" id="galleryFileInput" accept="image/*" multiple style="display:none;">
+                        </div>
+                        <div id="galleryUploadProgress" style="display:none;margin-top:10px;">
+                            <div style="background:#e9e9e9;border-radius:6px;height:8px;overflow:hidden;">
+                                <div id="galleryProgressBar" style="height:100%;background:var(--primary);width:0%;transition:width 0.2s;"></div>
+                            </div>
+                            <p id="galleryProgressText" style="font-size:12px;color:#666;margin-top:5px;">Reading photos...</p>
+                        </div>
+                        <div id="galleryPreviewRow" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-top:10px;"></div>
+                    </div>
+                    <div class="form-group full">
+                        <label>Caption <span style="font-weight:400;color:#888;">— optional, applies to all selected photos</span></label>
+                        <input type="text" id="galleryCaption" placeholder="e.g. Annual Reunion 2025">
+                    </div>
+                    <div class="form-group full">
+                        <button class="btn-primary" id="galleryAddBtn" onclick="addGalleryPhoto()" disabled style="opacity:0.5;">
+                            <i class="fas fa-plus"></i> Add to Gallery
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+                    <h3><i class="fas fa-th"></i> Current Photos <span id="galleryCount" style="font-size:13px;font-weight:400;color:#888;"></span></h3>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span id="storageInfo" style="font-size:12px;color:#aaa;"></span>
+                        <button class="btn-sm btn-danger" onclick="clearAllGallery()" style="font-size:12px;"><i class="fas fa-trash"></i> Clear All</button>
+                    </div>
+                </div>
+                <div id="adminGalleryGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;padding:16px;"></div>
+            </div>
+        </section>
+        <!-- ===== SITE SETTINGS SECTION ===== -->
+        <section class="admin-section" id="section-settings">
+            <div class="section-header">
+                <h2><i class="fas fa-cog"></i> Site Settings</h2>
+                <p>Update website content and information</p>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-address-card"></i> Contact Information</h3>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Organization Name (English)</label>
+                        <input type="text" id="settingOrgEn" placeholder="Darunnazat Alumni Forum">
+                    </div>
+                    <div class="form-group full">
+                        <label>Organization Name (Bangla)</label>
+                        <input type="text" id="settingOrgBn" placeholder="দারুননাজাত অ্যালামনাই ফোরাম">
+                    </div>
+                    <div class="form-group full">
+                        <label>Address (English)</label>
+                        <input type="text" id="settingAddressEn" placeholder="East Boxnagar, Sarulia, Demra, Dhaka–1361, Bangladesh">
+                    </div>
+                    <div class="form-group full">
+                        <label>Address (Bangla)</label>
+                        <input type="text" id="settingAddressBn" placeholder="পূর্ব বক্সনগর, সারুলিয়া, ডেমরা, ঢাকা–১৩৬১, বাংলাদেশ">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="text" id="settingPhone" placeholder="+880 963 851 0916">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="text" id="settingEmail" placeholder="alumni.dskmaa2025@gmail.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Facebook URL</label>
+                        <input type="text" id="settingFacebook" placeholder="https://facebook.com/...">
+                    </div>
+                    <div class="form-group">
+                        <label>Website Notice / Hero Subtitle</label>
+                        <input type="text" id="settingHeroSub" placeholder="DAF | Dakhil 2020 | Alim 2022">
+                    </div>
+                    <div class="form-group full">
+                        <button class="btn-primary" onclick="saveContactSettings()">
+                            <i class="fas fa-save"></i> Save Contact Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Events Settings -->
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-calendar-plus"></i> Manage Events</h3>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Event Title</label>
+                        <input type="text" id="eventTitle" placeholder="e.g. Annual Alumni Reunion">
+                    </div>
+                    <div class="form-group">
+                        <label>Event Date</label>
+                        <input type="date" id="eventDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Event Time</label>
+                        <input type="time" id="eventTime">
+                    </div>
+                    <div class="form-group full">
+                        <label>Location</label>
+                        <input type="text" id="eventLocation" placeholder="Darunnazat Siddikia Kamil Madrasah Campus">
+                    </div>
+                    <div class="form-group full">
+                        <label>Description</label>
+                        <textarea id="eventDesc" rows="3" placeholder="Event description..."></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>Link (Optional) <span style="font-weight:400;color:#888;">— e.g. Registration URL</span></label>
+                        <input type="url" id="eventLink" placeholder="https://example.com/register">
+                    </div>
+                    <input type="hidden" id="eventEditId">
+                    <div class="form-group full" style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <button class="btn-primary" id="eventSaveBtn" onclick="saveEvent()" style="flex:1;">
+                            <i class="fas fa-plus"></i> Add Event
+                        </button>
+                        <button class="btn-secondary" id="eventCancelBtn" onclick="cancelEditEvent()" style="display:none;flex:1;">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </div>
+                </div>
+
+                <div id="eventsList" style="margin-top:16px;"></div>
+            </div>
+
+            <!-- Admin Password Change -->
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-key"></i> Change Admin Password</h3>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" id="newAdminPw" placeholder="New password">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input type="password" id="confirmAdminPw" placeholder="Confirm password">
+                    </div>
+                    <div class="form-group full">
+                        <button class="btn-primary" onclick="changeAdminPassword()">
+                            <i class="fas fa-save"></i> Update Password
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ===== USER DETAIL MODAL ===== -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="userModal">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-circle"></i> User Profile</h3>
+                <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ===== EDIT ANNOUNCEMENT MODAL ===== -->
+    <div id="annEditModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:14px;padding:30px 28px;width:100%;max-width:520px;box-shadow:0 10px 40px rgba(0,0,0,0.2);position:relative;margin:20px;">
+            <button onclick="closeAnnEditModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:#888;line-height:1;">&times;</button>
+            <h3 style="margin:0 0 20px;font-size:17px;"><i class="fas fa-edit" style="margin-right:8px;color:var(--primary);"></i>Edit Announcement</h3>
+            <input type="hidden" id="editAnnId">
+            <div class="form-group" style="margin-bottom:14px;">
+                <label style="font-size:13px;font-weight:600;color:#555;display:block;margin-bottom:6px;">Title</label>
+                <input type="text" id="editAnnTitle" style="width:100%;padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+            </div>
+            <div class="form-group" style="margin-bottom:14px;">
+                <label style="font-size:13px;font-weight:600;color:#555;display:block;margin-bottom:6px;">Message</label>
+                <textarea id="editAnnMsg" rows="3" style="width:100%;padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;resize:vertical;"></textarea>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+                <div>
+                    <label style="font-size:13px;font-weight:600;color:#555;display:block;margin-bottom:6px;">Type</label>
+                    <select id="editAnnType" style="width:100%;padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;">
+                        <option value="info">Info</option>
+                        <option value="success">Success</option>
+                        <option value="warning">Warning</option>
+                        <option value="danger">Important</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:13px;font-weight:600;color:#555;display:block;margin-bottom:6px;">Date</label>
+                    <input type="date" id="editAnnDate" style="width:100%;padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;">
+                </div>
+            </div>
+            <div style="margin-bottom:20px;">
+                <label style="font-size:13px;font-weight:600;color:#555;display:block;margin-bottom:6px;">Link URL <span style="font-weight:400;color:#aaa;">(optional)</span></label>
+                <input type="url" id="editAnnLink" placeholder="https://example.com" style="width:100%;padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+            </div>
+            <div style="display:flex;gap:10px;justify-content:flex-end;">
+                <button onclick="closeAnnEditModal()" style="padding:10px 20px;border:1.5px solid #ddd;background:#fff;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+                <button onclick="updateAnnouncement()" class="btn-primary" style="padding:10px 22px;"><i class="fas fa-save"></i> Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SEND MESSAGE MODAL ===== -->
+    <div id="sendMsgModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:14px;padding:30px 28px;width:100%;max-width:500px;box-shadow:0 10px 40px rgba(0,0,0,0.2);position:relative;margin:20px;">
+            <button onclick="closeSendMsgModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:#888;">&times;</button>
+            <h3 style="margin:0 0 6px;font-size:17px;"><i class="fas fa-paper-plane" style="margin-right:8px;color:#1565c0;"></i>Send Message to User</h3>
+            <p style="font-size:13px;color:#888;margin-bottom:18px;">To: <strong id="msgToName"></strong></p>
+            <input type="hidden" id="msgToEmail">
+            <div style="margin-bottom:14px;">
+                <label style="font-size:13px;font-weight:600;color:#555;display:block;margin-bottom:6px;">Subject <span style="color:#e74c3c;">*</span></label>
+                <input type="text" id="msgSubject" placeholder="Enter message subject" style="width:100%;padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+            </div>
+            <div style="margin-bottom:20px;">
+                <label style="font-size:13px;font-weight:600;color:#555;display:block;margin-bottom:6px;">Message <span style="color:#e74c3c;">*</span></label>
+                <textarea id="msgBody" rows="5" placeholder="Type your message here..." style="width:100%;padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;resize:vertical;"></textarea>
+            </div>
+            <div style="display:flex;gap:10px;justify-content:flex-end;">
+                <button onclick="closeSendMsgModal()" style="padding:10px 20px;border:1.5px solid #ddd;background:#fff;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+                <button onclick="sendMessageToUser()" style="padding:10px 22px;background:#1565c0;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;"><i class="fas fa-paper-plane"></i> Send Message</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Announcement Detail View Modal -->
+    <div id="annViewModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;padding:16px;">
+        <div style="background:#fff;border-radius:16px;max-width:540px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,0.25);position:relative;overflow:hidden;">
+            <div style="padding:20px 24px 16px;border-bottom:1.5px solid #f0f0f0;display:flex;align-items:center;gap:12px;">
+                <div style="width:42px;height:42px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fas fa-bullhorn" style="color:#fff;font-size:16px;"></i>
+                </div>
+                <div style="flex:1;">
+                    <h3 id="annViewTitle" style="margin:0;font-size:1.1rem;color:#1a1a1a;"></h3>
+                    <div style="margin-top:5px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                        <span id="annViewBadge" style="font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px;"></span>
+                        <span id="annViewDate" style="font-size:12px;color:#888;"></span>
+                    </div>
+                </div>
+                <button onclick="document.getElementById('annViewModal').style.display='none'" style="background:none;border:none;font-size:22px;cursor:pointer;color:#aaa;line-height:1;">&times;</button>
+            </div>
+            <div style="padding:20px 24px 24px;">
+                <p id="annViewMsg" style="font-size:0.95rem;color:#444;line-height:1.75;white-space:pre-wrap;margin:0 0 14px;"></p>
+                <p id="annViewCreated" style="font-size:12px;color:#aaa;margin:0 0 16px;"></p>
+                <div id="annViewLinkWrap" style="display:none;">
+                    <a id="annViewLink" href="#" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:9px 20px;background:var(--primary);color:#fff;border-radius:30px;font-size:0.88rem;font-weight:600;text-decoration:none;">
+                        <i class="fas fa-external-link-alt"></i> Visit Link
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

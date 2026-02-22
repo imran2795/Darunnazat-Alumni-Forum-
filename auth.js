@@ -1,18 +1,73 @@
 // Authentication JavaScript
 
+// Alumni ID live check
+const alumniIdInput = document.getElementById('alumniId');
+if (alumniIdInput) {
+    alumniIdInput.addEventListener('input', function() {
+        const val = this.value.trim();
+        const status = document.getElementById('alumniIdStatus');
+        if (!val) { status.textContent = ''; return; }
+        if (!/^\d{8}$/.test(val)) {
+            status.innerHTML = '<span style="color:#e74c3c;"><i class="fas fa-times-circle"></i> Must be exactly 8 digits (e.g. 20220001)</span>';
+            return;
+        }
+        const users = JSON.parse(localStorage.getItem('alumniUsers')) || [];
+        if (users.some(u => u.alumniId === val)) {
+            status.innerHTML = '<span style="color:#e74c3c;"><i class="fas fa-times-circle"></i> This Alumni ID is already registered.</span>';
+        } else {
+            status.innerHTML = '<span style="color:#27ae60;"><i class="fas fa-check-circle"></i> Alumni ID available!</span>';
+        }
+    });
+}
+
 // Registration Form Handler
 const registrationForm = document.getElementById('registrationForm');
 if (registrationForm) {
     registrationForm.addEventListener('submit', function(e) {
         e.preventDefault();
+
+        const alumniId = (document.getElementById('alumniId').value || '').trim();
+
+        // Validate Alumni ID
+        if (!alumniId) {
+            showAlert('Alumni ID is required!', 'error');
+            document.getElementById('alumniId').focus();
+            return;
+        }
+        if (!/^\d{8}$/.test(alumniId)) {
+            showAlert('Alumni ID must be exactly 8 digits (e.g. 20220001)', 'error');
+            document.getElementById('alumniId').focus();
+            return;
+        }
+        // Check uniqueness immediately
+        const existingCheck = JSON.parse(localStorage.getItem('alumniUsers')) || [];
+        if (existingCheck.some(u => u.alumniId === alumniId)) {
+            showAlert('This Alumni ID is already registered! Each ID can only be used once.', 'error');
+            document.getElementById('alumniId').focus();
+            return;
+        }
         
         // Get form data
-        const formData = new FormData(registrationForm);
-        const alumniData = {};
-        
-        formData.forEach((value, key) => {
-            alumniData[key] = value;
-        });
+        const alumniData = {
+            alumniId,
+            fullName: document.getElementById('fullName').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            dob: document.getElementById('dob').value,
+            gender: document.getElementById('gender').value,
+            address: document.getElementById('address').value,
+            batch: document.getElementById('batch').value,
+            studentId: document.getElementById('studentId').value,
+            passingYear: document.getElementById('passingYear').value,
+            department: document.getElementById('department').value,
+            profession: document.getElementById('profession').value,
+            organization: document.getElementById('organization').value,
+            designation: document.getElementById('designation').value,
+            workLocation: document.getElementById('workLocation').value,
+            facebook: document.getElementById('facebook').value,
+            linkedin: document.getElementById('linkedin').value,
+            password: document.getElementById('password').value
+        };
         
         // Password validation
         const password = document.getElementById('password').value;
@@ -34,7 +89,26 @@ if (registrationForm) {
             return;
         }
         
-        // Store alumni data in localStorage (in real app, this would be sent to server)
+        // Handle profile picture
+        const profilePicInput = document.getElementById('profilePic');
+        if (profilePicInput && profilePicInput.files && profilePicInput.files[0]) {
+            const file = profilePicInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                alumniData.profilePicture = e.target.result;
+                saveAlumniData(alumniData);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            alumniData.profilePicture = '';
+            saveAlumniData(alumniData);
+        }
+    });
+    
+    // Save alumni data function
+    function saveAlumniData(alumniData) {
+        // Store alumni data in localStorage
         const existingAlumni = JSON.parse(localStorage.getItem('alumniUsers')) || [];
         
         // Check if email already exists
@@ -42,52 +116,66 @@ if (registrationForm) {
             showAlert('Email already registered!', 'error');
             return;
         }
+
+        // Double-check Alumni ID uniqueness at save time
+        if (existingAlumni.some(user => user.alumniId === alumniData.alumniId)) {
+            showAlert('This Alumni ID is already registered! Each ID can only be used once.', 'error');
+            return;
+        }
         
-        // Add unique ID and registration date
+        // Add unique system ID and registration date
         alumniData.id = Date.now().toString();
         alumniData.registrationDate = new Date().toISOString();
         alumniData.status = 'active';
-        
-        // Remove confirm password before storing
-        delete alumniData.confirmPassword;
         
         // Add to alumni array
         existingAlumni.push(alumniData);
         localStorage.setItem('alumniUsers', JSON.stringify(existingAlumni));
         
-        showAlert('Registration successful! Redirecting to login...', 'success');
+        showAlert('Registration successful! Welcome to DAF Alumni Network. Redirecting...', 'success');
         
-        // Redirect to login after 2 seconds
+        // Redirect to alumni directory after 2 seconds
         setTimeout(() => {
-            window.location.href = 'login.html';
+            window.location.href = 'alumni-directory.html';
         }, 2000);
-    });
+    }
     
     // Password strength checker
     const passwordInput = document.getElementById('password');
     const strengthIndicator = document.getElementById('passwordStrength');
     
-    passwordInput.addEventListener('input', function() {
-        const password = this.value;
-        const strength = checkPasswordStrength(password);
-        
-        strengthIndicator.className = 'password-strength ' + strength;
-    });
+    if (passwordInput && strengthIndicator) {
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            const strength = checkPasswordStrength(password);
+            
+            strengthIndicator.className = 'password-strength ' + strength;
+        });
+    }
     
     // Profile picture preview
     const profilePicInput = document.getElementById('profilePic');
     const filePreview = document.getElementById('filePreview');
     
-    profilePicInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                filePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-            };
-            reader.readAsDataURL(file);
-        }
-    });
+    if (profilePicInput && filePreview) {
+        profilePicInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Check file size (max 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    showAlert('File size must be less than 2MB', 'error');
+                    this.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    filePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
 }
 
 // Login Form Handler

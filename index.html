@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Darunnazat Siddikia Kamil Madrasah Alumni Association - DSKMAA</title>
-    <link rel="icon" type="image/png" href="images/logo.png">
-    <link rel="shortcut icon" type="image/png" href="images/logo.png">
-    <link rel="apple-touch-icon" href="images/logo.png">
+    <title>দারুননাজাত অ্যালামনাই ফোরাম (দাখিল ২০২০ এবং আলিম ২০২২) - DAF</title>
+    <link rel="icon" type="image/png" href="images/logo.jpeg">
+    <link rel="shortcut icon" type="image/png" href="images/logo.jpeg">
+    <link rel="apple-touch-icon" href="images/logo.jpeg">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -15,13 +15,13 @@
     <nav class="navbar">
         <div class="container">
             <div class="logo">
-                <img src="images/logo.png" alt="DSKMAA Logo" class="logo-img">
-                <span>DSKMAA</span>
+                <img src="images/logo.jpeg" alt="DAF Logo" class="logo-img">
+                <span>DAF</span>
             </div>
             <ul class="nav-menu">
                 <li><a href="#home" data-en="Home" data-bn="হোম">Home</a></li>
                 <li><a href="#about" data-en="About" data-bn="আমাদের সম্পর্কে">About</a></li>
-                <li><a href="#alumni" data-en="Alumni" data-bn="আলামনাই">Alumni</a></li>
+                <li><a href="alumni-directory.html" data-en="Alumni Directory" data-bn="আলামনাই তালিকা">Alumni Directory</a></li>
                 <li><a href="#events" data-en="Events" data-bn="ইভেন্ট">Events</a></li>
                 <li><a href="#gallery" data-en="Gallery" data-bn="গ্যালারি">Gallery</a></li>
                 <li><a href="#contact" data-en="Contact" data-bn="যোগাযোগ">Contact</a></li>
@@ -29,6 +29,14 @@
             <div class="language-switcher">
                 <button class="lang-btn active" data-lang="en">English</button>
                 <button class="lang-btn" data-lang="bn">বাংলা</button>
+            </div>
+            <!-- Logged-in user profile pill -->
+            <div id="navUserPill" style="display:none;">
+                <a href="dashboard.html" id="navUserLink" style="display:flex;align-items:center;gap:8px;text-decoration:none;background:rgba(44,95,45,0.08);border:2px solid var(--primary-color,#2c5f2d);border-radius:50px;padding:5px 14px 5px 6px;transition:background .2s;">
+                    <img id="navUserAvatar" src="https://via.placeholder.com/32" alt="profile" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #97bc62;">
+                    <span id="navUserName" style="font-size:.88rem;font-weight:700;color:#2c5f2d;max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></span>
+                    <i class="fas fa-th-large" style="font-size:.78rem;color:#2c5f2d;opacity:.7;"></i>
+                </a>
             </div>
             <div class="hamburger">
                 <span></span>
@@ -38,14 +46,28 @@
         </div>
     </nav>
 
+    <!-- Announcement Bar (loaded dynamically from admin panel) -->
+    <div id="announcementBar" class="announcement-bar" style="display:none;">
+        <div class="ann-bar-inner">
+            <span class="ann-bar-icon"><i class="fas fa-bullhorn"></i></span>
+            <div class="ann-bar-track">
+                <div class="ann-bar-items" id="annBarItems"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Hero Section -->
     <section id="home" class="hero">
+        <!-- Slide backgrounds -->
+        <div class="hero-slides-wrap" id="heroSlidesWrap">
+            <div class="hero-slide active" id="heroDefaultSlide" style="background-image:url('images/main.jpg');"></div>
+        </div>
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h1 class="hero-title" data-en="Welcome to Darunnazat Siddikia Kamil Madrasah Alumni Association" data-bn="স্বাগতম Darunnazat Siddikia Kamil Madrasah Alumni Association">Welcome to Darunnazat Siddikia Kamil Madrasah Alumni Association</h1>
+            <h1 class="hero-title" data-en="Welcome to Darunnazat Alumni Forum (Dakhil 2020 and Alim 2022)" data-bn="স্বাগতম দারুননাজাত অ্যালামনাই ফোরাম (দাখিল ২০২০ এবং আলিম ২০২২)">Welcome to Darunnazat Alumni Forum (Dakhil 2020 and Alim 2022)</h1>
             <div class="hero-subtitle-with-logo">
-                <img src="images/logo.png" alt="DSKMAA Logo" class="hero-logo">
-                <p class="hero-subtitle">DSKMAA | Dakhil 2020 | Alim 2022</p>
+                <img src="images/logo.jpeg" alt="DAF Logo" class="hero-logo">
+                <p class="hero-subtitle">DAF | Dakhil 2020 | Alim 2022</p>
             </div>
             <p class="hero-description" data-en="Stay connected with the glorious past and bright future of our educational institution" data-bn="আমাদের শিক্ষা প্রতিষ্ঠানের গৌরবোজ্জ্বল অতীত ও উজ্জ্বল ভবিষ্যতের সাথে সংযুক্ত থাকুন">Stay connected with the glorious past and bright future of our educational institution</p>
             <div class="hero-buttons">
@@ -53,6 +75,10 @@
                 <a href="login.html" class="btn btn-secondary" data-en="Alumni Login" data-bn="আলামনাই লগইন">Alumni Login</a>
             </div>
         </div>
+        <!-- Slider controls -->
+        <button class="hero-arrow hero-prev" id="heroPrev" aria-label="Previous">&#8249;</button>
+        <button class="hero-arrow hero-next" id="heroNext" aria-label="Next">&#8250;</button>
+        <div class="hero-dots" id="heroDots"></div>
         <div class="scroll-indicator">
             <i class="fas fa-chevron-down"></i>
         </div>
@@ -68,32 +94,37 @@
             <div class="about-content">
                 <div class="about-text">
                     <div class="about-title-with-logo">
-                        <img src="images/logo.png" alt="DSKMAA Logo" class="about-logo">
-                        <h3>Darunnazat Siddikia Kamil Madrasah Alumni Association (DSKMAA)</h3>
+                        <img src="images/logo.jpeg" alt="DAF Logo" class="about-logo">
+                        <h3 data-en="Darunnazat Alumni Forum (Dakhil 2020 and Alim 2022)" data-bn="দারুননাজাত অ্যালামনাই ফোরাম (দাখিল ২০২০ এবং আলিম ২০২২)">Darunnazat Alumni Forum (Dakhil 2020 and Alim 2022)</h3>
                     </div>
-                    <p data-en="DSKMAA is an organization of former students of Dakhil 2020 and Alim 2022 batches of Darunnazat Siddikia Kamil Madrasah. Our goal is to strengthen relationships among all alumni, contribute to the development of educational institutions and participate in social service work." data-bn="DSKMAA Darunnazat Siddikia Kamil Madrasah এর দাখিল ২০২০ ও আলিম ২০২২ ব্যাচের প্রাক্তন শিক্ষার্থীদের একটি সংগঠন। আমাদের লক্ষ্য হল সকল প্রাক্তন শিক্ষার্থীদের মধ্যে সম্পর্ক দৃঢ় করা, শিক্ষা প্রতিষ্ঠানের উন্নয়নে অবদান রাখা এবং সমাজসেবামূলক কাজে অংশগ্রহণ করা।">DSKMAA is an organization of former students of Dakhil 2020 and Alim 2022 batches of Darunnazat Siddikia Kamil Madrasah. Our goal is to strengthen relationships among all alumni, contribute to the development of educational institutions and participate in social service work.</p>
+                    <p id="aboutDesc" data-en="Darunnazat Alumni Forum (DAF) is an organization of former students of Dakhil 2020 and Alim 2022 batches of Darunnazat Siddikia Kamil Madrasah. Our goal is to strengthen relationships among all alumni, contribute to the development of educational institutions and participate in social service work." data-bn="দারুননাজাত অ্যালামনাই ফোরাম (DAF) দারুননাজাত সিদ্দিকিয়া কামিল মাদ্রাসার দাখিল ২০২০ ও আলিম ২০২২ ব্যাচের প্রাক্তন শিক্ষার্থীদের একটি সংগঠন। আমাদের লক্ষ্য হল সকল প্রাক্তন শিক্ষার্থীদের মধ্যে সম্পর্ক দৃঢ় করা, শিক্ষা প্রতিষ্ঠানের উন্নয়নে অবদান রাখা এবং সমাজসেবামূলক কাজে অংশগ্রহণ করা।">Darunnazat Alumni Forum (DAF) is an organization of former students of Dakhil 2020 and Alim 2022 batches of Darunnazat Siddikia Kamil Madrasah. Our goal is to strengthen relationships among all alumni, contribute to the development of educational institutions and participate in social service work.</p>
                     <div class="stats">
                         <div class="stat-item">
                             <i class="fas fa-users"></i>
-                            <h4>৫০০+</h4>
-                            <p data-en="Alumni Members" data-bn="আলামনাই সদস্য">Alumni Members</p>
+                            <h4 id="liveStatTotal">0</h4>
+                            <p data-en="Registered Alumni" data-bn="নিবন্ধিত অ্যালামনাই">Registered Alumni</p>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <h4 id="liveStatDakhil">0</h4>
+                            <p data-en="Dakhil 2020" data-bn="দাখিল ২০২০">Dakhil 2020</p>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-user-graduate"></i>
+                            <h4 id="liveStatAlim">0</h4>
+                            <p data-en="Alim 2022" data-bn="আলিম ২০২২">Alim 2022</p>
                         </div>
                         <div class="stat-item">
                             <i class="fas fa-calendar-alt"></i>
-                            <h4>২০+</h4>
+                            <h4 id="liveStatEvents">0</h4>
                             <p data-en="Events Organized" data-bn="ইভেন্ট আয়োজিত">Events Organized</p>
-                        </div>
-                        <div class="stat-item">
-                            <i class="fas fa-hands-helping"></i>
-                            <h4>১৫+</h4>
-                            <p data-en="Social Services" data-bn="সমাজসেবা কার্যক্রম">Social Services</p>
                         </div>
                     </div>
                 </div>
                 <div class="about-image">
                     <div class="image-placeholder">
-                        <img src="images/logo.png" alt="DSKMAA Logo" class="about-main-logo">
-                        <p>Darunnazat Siddikia<br>Kamil Madrasah<br>Alumni Association<br>(DSKMAA)</p>
+                        <img src="images/logo.jpeg" alt="DAF Logo" class="about-main-logo">
+                        <p data-en="Darunnazat Alumni Forum<br>(Dakhil 2020 and Alim 2022)<br>(DAF)" data-bn="দারুননাজাত অ্যালামনাই ফোরাম<br>(দাখিল ২০২০ এবং আলিম ২০২২)<br>(DAF)">Darunnazat Alumni Forum<br>(Dakhil 2020 and Alim 2022)<br>(DAF)</p>
                     </div>
                 </div>
             </div>
@@ -107,12 +138,12 @@
                 <div class="mission-card">
                     <i class="fas fa-bullseye"></i>
                     <h3 data-en="Our Mission" data-bn="আমাদের লক্ষ্য">Our Mission</h3>
-                    <p data-en="To increase unity and cooperation among alumni, contribute to the development of educational institutions and work for the welfare of society." data-bn="প্রাক্তন শিক্ষার্থীদের মধ্যে ঐক্য ও সহযোগিতা বৃদ্ধি করা, শিক্ষা প্রতিষ্ঠানের উন্নয়নে অবদান রাখা এবং সমাজের কল্যাণে কাজ করা।">To increase unity and cooperation among alumni, contribute to the development of educational institutions and work for the welfare of society.</p>
+                    <p id="aboutMissionText" data-en="To increase unity and cooperation among alumni, contribute to the development of educational institutions and work for the welfare of society." data-bn="প্রাক্তন শিক্ষার্থীদের মধ্যে ঐক্য ও সহযোগিতা বৃদ্ধি করা, শিক্ষা প্রতিষ্ঠানের উন্নয়নে অবদান রাখা এবং সমাজের কল্যাণে কাজ করা।">To increase unity and cooperation among alumni, contribute to the development of educational institutions and work for the welfare of society.</p>
                 </div>
                 <div class="vision-card">
                     <i class="fas fa-eye"></i>
                     <h3 data-en="Our Vision" data-bn="আমাদের স্বপ্ন">Our Vision</h3>
-                    <p data-en="To build a strong and active alumni network that will play a leading role in education and social service." data-bn="একটি শক্তিশালী ও সক্রিয় আলামনাই নেটওয়ার্ক গড়ে তোলা যা শিক্ষা ও সমাজসেবায় অগ্রণী ভূমিকা পালন করবে।">To build a strong and active alumni network that will play a leading role in education and social service.</p>
+                    <p id="aboutVisionText" data-en="To build a strong and active alumni network that will play a leading role in education and social service." data-bn="একটি শক্তিশালী ও সক্রিয় আলামনাই নেটওয়ার্ক গড়ে তোলা যা শিক্ষা ও সমাজসেবায় অগ্রণী ভূমিকা পালন করবে।">To build a strong and active alumni network that will play a leading role in education and social service.
                 </div>
             </div>
         </div>
@@ -124,111 +155,42 @@
             <div class="section-header">
                 <h2 data-en="Our Alumni" data-bn="আমাদের আলামনাই">Our Alumni</h2>
                 <div class="underline"></div>
-                <p data-en="Proud alumni of Dakhil 2020 and Alim 2022 batch" data-bn="দাখিল ২০২০ ও আলিম ২০২২ ব্যাচের গর্বিত প্রাক্তন শিক্ষার্থী">Proud alumni of Dakhil 2020 and Alim 2022 batch</p>
+                <p data-en="Meet our proud alumni members" data-bn="আমাদের গর্বিত প্রাক্তন শিক্ষার্থীদের সাথে পরিচিত হন">Meet our proud alumni members</p>
             </div>
             
-            <div class="batch-selector">
-                <button class="batch-btn active" data-batch="all" data-en="All" data-bn="সকল">All</button>
-                <button class="batch-btn" data-batch="dakhil2020" data-en="Dakhil 2020" data-bn="দাখিল ২০২০">Dakhil 2020</button>
-                <button class="batch-btn" data-batch="alim2022" data-en="Alim 2022" data-bn="আলিম ২০২২">Alim 2022</button>
-            </div>
-
-            <div class="alumni-grid">
-                <div class="alumni-card" data-batch="dakhil2020">
-                    <div class="alumni-avatar">
-                        <img src="images/pic/Md Imran Hossain.jpeg" alt="Md Imran Hossain">
+            <div class="alumni-preview">
+                <div class="alumni-stats-grid">
+                    <div class="stat-card">
+                        <i class="fas fa-users"></i>
+                        <h3 id="alumSecTotal">0</h3>
+                        <p data-en="Total Alumni" data-bn="মোট আলামনাই">Total Alumni</p>
                     </div>
-                    <h4>Md Imran Hossain</h4>
-                    <p class="alumni-batch">Dakhil 2020</p>
-                    <p class="alumni-profession">Software Engineer</p>
-                    <p class="alumni-location"><i class="fas fa-map-marker-alt"></i> Dhaka, Bangladesh</p>
-                    <div class="alumni-social">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                        <a href="#"><i class="fas fa-envelope"></i></a>
+                    <div class="stat-card">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h3 id="alumSecDakhil">0</h3>
+                        <p data-en="Dakhil 2020" data-bn="দাখিল ২০২০">Dakhil 2020</p>
                     </div>
-                </div>
-
-                <div class="alumni-card" data-batch="dakhil2020">
-                    <div class="alumni-avatar">
-                        <img src="images/pic/Galib Mahmud.jpeg" alt="Galib Mahmud">
+                    <div class="stat-card">
+                        <i class="fas fa-user-graduate"></i>
+                        <h3 id="alumSecAlim">0</h3>
+                        <p data-en="Alim 2022" data-bn="আলিম ২০২২">Alim 2022</p>
                     </div>
-                    <h4>Galib Mahmud</h4>
-                    <p class="alumni-batch">Dakhil 2020</p>
-                    <p class="alumni-profession">Business Owner</p>
-                    <p class="alumni-location"><i class="fas fa-map-marker-alt"></i> Dhaka, Bangladesh</p>
-                    <div class="alumni-social">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                        <a href="#"><i class="fas fa-envelope"></i></a>
+                    <div class="stat-card">
+                        <i class="fas fa-briefcase"></i>
+                        <h3 id="alumSecProfessions">0</h3>
+                        <p data-en="Professions" data-bn="পেশা">Professions</p>
                     </div>
                 </div>
-
-                <div class="alumni-card" data-batch="alim2022">
-                    <div class="alumni-avatar">
-                        <img src="images/pic/Imam Hossen Rony.jpeg" alt="Imam Hossen Rony">
-                    </div>
-                    <h4>Imam Hossen Rony</h4>
-                    <p class="alumni-batch">Alim 2022</p>
-                    <p class="alumni-profession">Student</p>
-                    <p class="alumni-location"><i class="fas fa-map-marker-alt"></i> Dhaka, Bangladesh</p>
-                    <div class="alumni-social">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                        <a href="#"><i class="fas fa-envelope"></i></a>
-                    </div>
-                </div>
-
-                <div class="alumni-card" data-batch="alim2022">
-                    <div class="alumni-avatar">
-                        <img src="images/pic/Jonayedul Islam.jpeg" alt="Jonayedul Islam">
-                    </div>
-                    <h4>Jonayedul Islam</h4>
-                    <p class="alumni-batch">Alim 2022</p>
-                    <p class="alumni-profession">Student</p>
-                    <p class="alumni-location"><i class="fas fa-map-marker-alt"></i> Dhaka, Bangladesh</p>
-                    <div class="alumni-social">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                        <a href="#"><i class="fas fa-envelope"></i></a>
-                    </div>
-                </div>
-
-                <div class="alumni-card" data-batch="alim2022">
-                    <div class="alumni-avatar">
-                        <img src="images/pic/Jubayer Bhuiyan.jpeg" alt="Jubayer Bhuiyan">
-                    </div>
-                    <h4>Jubayer Bhuiyan</h4>
-                    <p class="alumni-batch">Alim 2022</p>
-                    <p class="alumni-profession">Student</p>
-                    <p class="alumni-location"><i class="fas fa-map-marker-alt"></i> Dhaka, Bangladesh</p>
-                    <div class="alumni-social">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                        <a href="#"><i class="fas fa-envelope"></i></a>
-                    </div>
-                </div>
-
-                <div class="alumni-card" data-batch="alim2022">
-                    <div class="alumni-avatar">
-                        <img src="images/pic/Arif Shibly.jpeg" alt="Arif Shibly">
-                    </div>
-                    <h4>Arif Shibly</h4>
-                    <p class="alumni-batch">Alim 2022</p>
-                    <p class="alumni-profession">Student</p>
-                    <p class="alumni-location"><i class="fas fa-map-marker-alt"></i> Dhaka, Bangladesh</p>
-                    <div class="alumni-social">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                        <a href="#"><i class="fas fa-envelope"></i></a>
-                    </div>
+                
+                <div class="alumni-cta">
+                    <p data-en="Want to see the complete list of our alumni members with detailed information?" data-bn="আমাদের প্রাক্তন শিক্ষার্থীদের বিস্তারিত তথ্য সহ সম্পূর্ণ তালিকা দেখতে চান?">Want to see the complete list of our alumni members with detailed information?</p>
+                    <a href="alumni-directory.html" class="btn btn-primary btn-large">
+                        <i class="fas fa-address-book"></i>
+                        <span data-en="View Alumni Directory" data-bn="আলামনাই তালিকা দেখুন">View Alumni Directory</span>
+                    </a>
                 </div>
             </div>
         </div>
-    </section>
-
-    <!-- Events Section -->
-    <section id="events" class="events">
     </section>
 
     <!-- Events Section -->
@@ -239,54 +201,8 @@
                 <div class="underline"></div>
             </div>
 
-            <div class="events-grid">
-                <div class="event-card upcoming">
-                    <div class="event-date">
-                        <span class="day">15</span>
-                        <span class="month">December</span>
-                        <span class="year">2025</span>
-                    </div>
-                    <div class="event-content">
-                        <span class="event-badge upcoming-badge">Upcoming</span>
-                        <h3>Annual Alumni Reunion</h3>
-                        <p><i class="fas fa-map-marker-alt"></i> Darunnazat Siddikia Kamil Madrasah Campus</p>
-                        <p><i class="fas fa-clock"></i> 10:00 AM</p>
-                        <p class="event-desc">Annual alumni gathering where all former students will come together.</p>
-                        <a href="#" class="btn btn-small">View Details</a>
-                    </div>
-                </div>
-
-                <div class="event-card upcoming">
-                    <div class="event-date">
-                        <span class="day">25</span>
-                        <span class="month">January</span>
-                        <span class="year">2026</span>
-                    </div>
-                    <div class="event-content">
-                        <span class="event-badge upcoming-badge">Upcoming</span>
-                        <h3>Career Guidance Seminar</h3>
-                        <p><i class="fas fa-map-marker-alt"></i> Auditorium</p>
-                        <p><i class="fas fa-clock"></i> 3:00 PM</p>
-                        <p class="event-desc">Career counseling session for current students.</p>
-                        <a href="#" class="btn btn-small">View Details</a>
-                    </div>
-                </div>
-
-                <div class="event-card upcoming">
-                    <div class="event-date">
-                        <span class="day">10</span>
-                        <span class="month">February</span>
-                        <span class="year">2026</span>
-                    </div>
-                    <div class="event-content">
-                        <span class="event-badge upcoming-badge">Upcoming</span>
-                        <h3>Spring Cultural Program</h3>
-                        <p><i class="fas fa-map-marker-alt"></i> School Auditorium</p>
-                        <p><i class="fas fa-clock"></i> 4:00 PM</p>
-                        <p class="event-desc">Cultural event showcasing talents of alumni and students.</p>
-                        <a href="#" class="btn btn-small">View Details</a>
-                    </div>
-                </div>
+            <div class="events-grid" id="eventsGrid">
+                <!-- Events loaded dynamically from admin panel -->
             </div>
         </div>
     </section>
@@ -300,43 +216,8 @@
                 <p data-en="Our Memory Collection" data-bn="আমাদের স্মৃতির ঝাঁপি">Our Memory Collection</p>
             </div>
 
-            <div class="gallery-grid">
-                <div class="gallery-item">
-                    <img src="images/WhatsApp Image 2025-11-02 at 11.48.29 PM (1).jpeg" alt="Gallery Image 1">
-                </div>
-                <div class="gallery-item">
-                    <img src="images/WhatsApp Image 2025-11-02 at 11.48.29 PM (2).jpeg" alt="Gallery Image 2">
-                </div>
-                <div class="gallery-item">
-                    <img src="images/WhatsApp Image 2025-11-02 at 11.48.29 PM (3).jpeg" alt="Gallery Image 3">
-                </div>
-                <div class="gallery-item">
-                    <img src="images/WhatsApp Image 2025-11-02 at 11.48.29 PM (4).jpeg" alt="Gallery Image 4">
-                </div>
-                <div class="gallery-item">
-                    <img src="images/WhatsApp Image 2025-11-02 at 11.48.29 PM (5).jpeg" alt="Gallery Image 5">
-                </div>
-                <div class="gallery-item">
-                    <img src="images/WhatsApp Image 2025-11-02 at 11.48.29 PM (6).jpeg" alt="Gallery Image 6">
-                </div>
-                <div class="gallery-item">
-                    <img src="images/WhatsApp Image 2025-11-02 at 11.48.29 PM (7).jpeg" alt="Gallery Image 7">
-                </div>
-                <div class="gallery-item">
-                    <img src="images/WhatsApp Image 2025-11-02 at 11.48.29 PM (8).jpeg" alt="Gallery Image 8">
-                </div>
-                <div class="gallery-item">
-                    <img src="images/WhatsApp Image 2025-11-02 at 11.48.29 PM (9).jpeg" alt="Gallery Image 9">
-                </div>
-                <div class="gallery-item">
-                    <img src="images/WhatsApp Image 2025-11-02 at 11.48.29 PM (10).jpeg" alt="Gallery Image 10">
-                </div>
-                <div class="gallery-item">
-                    <img src="images/WhatsApp Image 2025-11-02 at 11.48.29 PM (11).jpeg" alt="Gallery Image 11">
-                </div>
-                <div class="gallery-item">
-                    <img src="images/WhatsApp Image 2025-11-02 at 11.48.29 PM.jpeg" alt="Gallery Image 12">
-                </div>
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- Photos loaded dynamically from admin panel -->
             </div>
         </div>
     </section>
@@ -356,29 +237,28 @@
                         <i class="fas fa-map-marker-alt"></i>
                         <div>
                             <h4 data-en="Address" data-bn="ঠিকানা">Address</h4>
-                            <p>Darunnazat Siddikia Kamil Madrasah Alumni Association<br>
-                            পূর্ব বরুননগর, সারুলিয়া, ডেমরা, ঢাকা – ১৩৬১</p>
+                            <p id="contactAddress" data-en="Darunnazat Alumni Forum (DAF)<br>East Boxnagar, Sarulia, Demra, Dhaka–1361, Bangladesh" data-bn="দারুননাজাত অ্যালামনাই ফোরাম (DAF)<br>পূর্ব বক্সনগর, সারুলিয়া, ডেমরা, ঢাকা–১৩৬১, বাংলাদেশ">Darunnazat Alumni Forum (DAF)<br>East Boxnagar, Sarulia, Demra, Dhaka–1361, Bangladesh</p>
                         </div>
                     </div>
                     <div class="contact-item">
                         <i class="fas fa-phone"></i>
                         <div>
                             <h4 data-en="Phone" data-bn="ফোন">Phone</h4>
-                            <p>+880 963 851 0916</p>
+                            <p id="contactPhone">+880 963 851 0916</p>
                         </div>
                     </div>
                     <div class="contact-item">
                         <i class="fas fa-envelope"></i>
                         <div>
                             <h4 data-en="Email" data-bn="ইমেইল">Email</h4>
-                            <p>alumni.dskmaa2025@gmail.com</p>
+                            <p id="contactEmail">alumni.dskmaa2025@gmail.com</p>
                         </div>
                     </div>
                     <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a id="contactSocFb" href="#"><i class="fab fa-facebook"></i></a>
+                        <a id="contactSocTw" href="#"><i class="fab fa-twitter"></i></a>
+                        <a id="contactSocLi" href="#"><i class="fab fa-linkedin"></i></a>
+                        <a id="contactSocIg" href="#"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
 
@@ -457,10 +337,10 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <div class="footer-logo">
-                        <img src="images/logo.png" alt="DSKMAA Logo" class="footer-logo-img">
-                        <h3>DSKMAA</h3>
+                        <img src="images/logo.jpeg" alt="DAF Logo" class="footer-logo-img">
+                        <h3>DAF</h3>
                     </div>
-                    <p>An organization of former students from Dakhil 2020 and Alim 2022 batches of Darunnazat Siddikia Kamil Madrasah Alumni Association.</p>
+                    <p data-en="Darunnazat Alumni Forum (Dakhil 2020 and Alim 2022)" data-bn="দারুননাজাত অ্যালামনাই ফোরাম (দাখিল ২০২০ এবং আলিম ২০২২)">Darunnazat Alumni Forum (Dakhil 2020 and Alim 2022)</p>
                 </div>
                 <div class="footer-section">
                     <h3 data-en="Quick Links" data-bn="দ্রুত লিঙ্ক">Quick Links</h3>
@@ -474,21 +354,49 @@
                 <div class="footer-section">
                     <h3 data-en="Follow Us" data-bn="আমাদের অনুসরণ করুন">Follow Us</h3>
                     <div class="footer-social">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a id="footerSocFb" href="#"><i class="fab fa-facebook"></i></a>
+                        <a id="footerSocTw" href="#"><i class="fab fa-twitter"></i></a>
+                        <a id="footerSocLi" href="#"><i class="fab fa-linkedin"></i></a>
+                        <a id="footerSocIg" href="#"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p data-en="&copy; 2025 DSKMAA - Darunnazat Siddikia Kamil Madrasah Alumni Association. All Rights Reserved." data-bn="&copy; ২০২৫ DSKMAA - Darunnazat Siddikia Kamil Madrasah Alumni Association. সর্বস্বত্ব সংরক্ষিত।">&copy; 2025 DSKMAA - Darunnazat Siddikia Kamil Madrasah Alumni Association. All Rights Reserved.</p>
-                <p class="developer-credit" data-en="Designed & Developed by" data-bn="ডিজাইন ও ডেভেলপ করেছেন">
-                    Designed & Developed by <a href="https://mdimranhossainn.me/" target="_blank" rel="noopener noreferrer">MD Imran Hossain</a>
+                <p data-en="&copy; 2025 DAF - Darunnazat Alumni Forum (Dakhil 2020 and Alim 2022). All Rights Reserved." data-bn="&copy; ২০২৫ DAF - দারুননাজাত অ্যালামনাই ফোরাম (দাখিল ২০২০ এবং আলিম ২০২২)। সর্বস্বত্ব সংরক্ষিত।">&copy; 2025 DAF - Darunnazat Alumni Forum (Dakhil 2020 and Alim 2022). All Rights Reserved.</p>
+                <p class="developer-credit" data-en="Designed &amp; Developed by <a href='https://mdimranhossainn.me/' target='_blank' rel='noopener noreferrer'>MD Imran Hossain</a>" data-bn="ডিজাইন ও ডেভেলপ করেছেন <a href='https://mdimranhossainn.me/' target='_blank' rel='noopener noreferrer'>MD Imran Hossain</a>">
+                    Designed &amp; Developed by <a href="https://mdimranhossainn.me/" target="_blank" rel="noopener noreferrer">MD Imran Hossain</a>
                 </p>
+                <p style="margin-top:8px;"><a href="admin-login.html" style="color:rgba(255,255,255,0.35);font-size:12px;text-decoration:none;"><i class="fas fa-user-shield"></i> Admin Panel</a></p>
             </div>
         </div>
     </footer>
+
+    <!-- Announcement Detail Modal -->
+    <div id="annDetailModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:99999;align-items:center;justify-content:center;padding:16px;">
+        <div style="background:#fff;border-radius:16px;max-width:520px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,0.25);position:relative;overflow:hidden;">
+            <div id="annDetailHeader" style="padding:20px 24px 16px;border-bottom:1.5px solid #f0f0f0;display:flex;align-items:center;gap:12px;">
+                <div style="width:42px;height:42px;background:var(--primary-color,#2c5f2d);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fas fa-bullhorn" style="color:#fff;font-size:16px;"></i>
+                </div>
+                <div style="flex:1;">
+                    <h3 id="annDetailTitle" style="margin:0;font-size:1.15rem;color:#1a1a1a;"></h3>
+                    <div style="margin-top:5px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                        <span id="annDetailBadge" style="font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px;"></span>
+                        <span id="annDetailDate" style="font-size:12px;color:#888;"></span>
+                    </div>
+                </div>
+                <button onclick="document.getElementById('annDetailModal').style.display='none'" style="background:none;border:none;font-size:22px;cursor:pointer;color:#aaa;line-height:1;flex-shrink:0;">&times;</button>
+            </div>
+            <div style="padding:20px 24px 24px;">
+                <p id="annDetailMsg" style="font-size:0.97rem;color:#444;line-height:1.75;white-space:pre-wrap;margin:0 0 18px;"></p>
+                <div id="annDetailLinkWrap" style="display:none;">
+                    <a id="annDetailLink" href="#" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:10px 22px;background:#2c5f2d;color:#fff;border-radius:30px;font-size:0.9rem;font-weight:600;text-decoration:none;transition:opacity .2s;">
+                        <i class="fas fa-external-link-alt"></i> Visit Link
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>

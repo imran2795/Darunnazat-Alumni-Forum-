@@ -1,350 +1,419 @@
-// Dashboard JavaScript
+// ============================================================
+//  DAF USER DASHBOARD
+// ============================================================
 
-// Check if user is logged in
+// Guard: must be logged in
 const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+if (!currentUser) { window.location.href = 'login.html'; }
 
-if (!currentUser) {
-    window.location.href = 'login.html';
+// ---- Helpers ----
+function getBatchName(b) {
+    return b === 'dakhil2020' ? 'Dakhil 2020' : b === 'alim2022' ? 'Alim 2022' : (b || '');
+}
+function fmtDate(d) {
+    if (!d) return '';
+    const dt = new Date(d);
+    return isNaN(dt) ? d : dt.toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+}
+function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+function el(id) { return document.getElementById(id); }
+function setText(id, val) { const e = el(id); if (e) e.textContent = val || ''; }
+
+// ---- Toast ----
+function toast(msg, type = 'success') {
+    const t = el('dashToast');
+    if (!t) return;
+    t.textContent = msg;
+    t.className = 'dash-toast show ' + type;
+    setTimeout(() => t.className = 'dash-toast', 3000);
 }
 
-// Initialize Dashboard
-document.addEventListener('DOMContentLoaded', function() {
-    loadUserData();
-    initializeSidebarNavigation();
-    initializeUserMenu();
-    loadAlumniDirectory();
+// ============================================================
+//  SECTION NAVIGATION
+// ============================================================
+function switchSection(name) {
+    document.querySelectorAll('.dash-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+    const sec = el(name + '-section');
+    if (sec) sec.classList.add('active');
+    const item = document.querySelector('.menu-item[data-section="' + name + '"]');
+    if (item) item.classList.add('active');
+    window.scrollTo(0, 0);
+    closeSidebar(); // close sidebar on mobile after navigation
+    if (name === 'messages') { loadMessages(); markMessagesRead(); }
+    if (name === 'events') loadEvents();
+}
+
+document.querySelectorAll('.menu-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+        e.preventDefault();
+        switchSection(this.getAttribute('data-section'));
+    });
 });
 
-// Load User Data
+// Dropdown nav links
+document.querySelectorAll('.dropdown-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        el('userDropdown').classList.remove('show');
+        switchSection(this.getAttribute('data-section'));
+    });
+});
+
+// User menu toggle
+const userMenuBtn = el('userMenuBtn');
+if (userMenuBtn) {
+    userMenuBtn.addEventListener('click', () => el('userDropdown').classList.toggle('show'));
+    document.addEventListener('click', e => {
+        if (!userMenuBtn.contains(e.target) && !el('userDropdown').contains(e.target))
+            el('userDropdown').classList.remove('show');
+    });
+}
+
+// Logout
+function doLogout() {
+    if (confirm('Logout from your account?')) {
+        sessionStorage.removeItem('currentUser');
+        window.location.href = 'login.html';
+    }
+}
+const lb = el('logoutBtn'); if (lb) lb.addEventListener('click', e => { e.preventDefault(); doLogout(); });
+const sl = el('sidebarLogout'); if (sl) sl.addEventListener('click', e => { e.preventDefault(); doLogout(); });
+
+// ============================================================
+//  MOBILE SIDEBAR TOGGLE
+// ============================================================
+function openSidebar() {
+    const sidebar = document.querySelector('.dashboard-sidebar');
+    const overlay = el('sidebarOverlay');
+    if (sidebar) sidebar.classList.add('show');
+    if (overlay) overlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+function closeSidebar() {
+    const sidebar = document.querySelector('.dashboard-sidebar');
+    const overlay = el('sidebarOverlay');
+    if (sidebar) sidebar.classList.remove('show');
+    if (overlay) overlay.classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+const sidebarToggleBtn = el('sidebarToggleBtn');
+if (sidebarToggleBtn) {
+    sidebarToggleBtn.addEventListener('click', () => {
+        const sidebar = document.querySelector('.dashboard-sidebar');
+        if (sidebar && sidebar.classList.contains('show')) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
+    });
+}
+const sidebarOverlay = el('sidebarOverlay');
+if (sidebarOverlay) {
+    sidebarOverlay.addEventListener('click', closeSidebar);
+}
+
+// ============================================================
+//  LOAD USER DATA INTO PROFILE & EDIT FORM
+// ============================================================
 function loadUserData() {
     if (!currentUser) return;
-    
-    // Update user name in multiple places
-    document.getElementById('userName').textContent = currentUser.fullName;
-    document.getElementById('welcomeName').textContent = currentUser.fullName;
-    
-    // Update profile section
-    document.getElementById('profileName').textContent = currentUser.fullName;
-    document.getElementById('profileBatch').textContent = getBatchName(currentUser.batch);
-    document.getElementById('profileProfession').textContent = `${currentUser.profession}${currentUser.organization ? ' at ' + currentUser.organization : ''}`;
-    document.getElementById('profileEmail').textContent = currentUser.email;
-    document.getElementById('profilePhone').textContent = currentUser.phone;
-    document.getElementById('profileDob').textContent = formatDate(currentUser.dob);
-    document.getElementById('profileGender').textContent = capitalizeFirst(currentUser.gender);
-    document.getElementById('profileStudentId').textContent = currentUser.studentId || 'N/A';
-    document.getElementById('profilePassingYear').textContent = currentUser.passingYear;
-    document.getElementById('profileDepartment').textContent = currentUser.department || 'N/A';
-    document.getElementById('profileOrganization').textContent = currentUser.organization || 'N/A';
-    document.getElementById('profileDesignation').textContent = currentUser.designation || 'N/A';
-    document.getElementById('profileLocation').textContent = currentUser.workLocation || 'N/A';
-    
-    // Load profile picture if available
-    if (currentUser.profilePic) {
-        document.getElementById('userAvatar').src = currentUser.profilePic;
-        document.getElementById('profileAvatar').src = currentUser.profilePic;
+    const u = currentUser;
+
+    // Navbar
+    setText('userName', u.fullName);
+    const ua = el('userAvatar');
+    if (ua && u.profilePicture) ua.src = u.profilePicture;
+
+    // Sidebar
+    setText('sidebarName', u.fullName);
+    setText('sidebarAlumniId', u.alumniId ? 'ID: ' + u.alumniId : '');
+    const sa = el('sidebarAvatar');
+    if (sa) sa.src = u.profilePicture || 'https://via.placeholder.com/70';
+
+    // Profile banner
+    const pa = el('profileAvatar');
+    if (pa) pa.src = u.profilePicture || 'https://via.placeholder.com/120';
+    setText('profileName', u.fullName);
+    setText('profileBatchPill', getBatchName(u.batch));
+    const prof = u.profession ? u.profession + (u.organization ? ' at ' + u.organization : '') : '';
+    setText('profileProfession', prof);
+    setText('profileAlumniId', u.alumniId || '');
+
+    // Social links in banner
+    const sl2 = el('profileSocialLinks');
+    if (sl2) {
+        sl2.innerHTML = '';
+        if (u.email) sl2.innerHTML += `<a href="mailto:${u.email}" title="Email"><i class="fas fa-envelope"></i></a>`;
+        if (u.facebook) sl2.innerHTML += `<a href="${u.facebook}" target="_blank" title="Facebook"><i class="fab fa-facebook"></i></a>`;
+        if (u.linkedin) sl2.innerHTML += `<a href="${u.linkedin}" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>`;
     }
-    
-    // Load edit form
-    document.getElementById('editFullName').value = currentUser.fullName;
-    document.getElementById('editPhone').value = currentUser.phone;
-    document.getElementById('editAddress').value = currentUser.address || '';
-    document.getElementById('editProfession').value = currentUser.profession;
-    document.getElementById('editOrganization').value = currentUser.organization || '';
-    document.getElementById('editDesignation').value = currentUser.designation || '';
-    document.getElementById('editWorkLocation').value = currentUser.workLocation || '';
+
+    // Personal
+    setText('pEmail', u.email);
+    setText('pPhone', u.phone);
+    setText('pDob', fmtDate(u.dob));
+    setText('pGender', cap(u.gender));
+    setText('pAddress', u.address);
+
+    // Academic
+    setText('pBatch', getBatchName(u.batch));
+    setText('pPassingYear', u.passingYear);
+    setText('pDepartment', u.department);
+    setText('pStudentId', u.studentId);
+
+    // Professional
+    setText('pProfession', u.profession);
+    setText('pOrganization', u.organization);
+    setText('pDesignation', u.designation);
+    setText('pWorkLocation', u.workLocation);
+
+    // Fill edit form
+    const fields = {
+        editFullName: u.fullName, editDob: u.dob, editGender: u.gender,
+        editPhone: u.phone, editAddress: u.address, editStudentId: u.studentId,
+        editBatch: u.batch, editDepartment: u.department, editPassingYear: u.passingYear,
+        editProfession: u.profession, editOrganization: u.organization,
+        editDesignation: u.designation, editWorkLocation: u.workLocation,
+        editFacebook: u.facebook, editLinkedin: u.linkedin
+    };
+    Object.entries(fields).forEach(([id, val]) => {
+        const inp = el(id); if (inp) inp.value = val || '';
+    });
+    const ep = el('editProfilePic');
+    if (ep) ep.src = u.profilePicture || 'https://via.placeholder.com/120';
+
+    // Message badge
+    updateMsgBadge();
 }
 
-// Sidebar Navigation
-function initializeSidebarNavigation() {
-    const menuItems = document.querySelectorAll('.menu-item');
-    const sections = document.querySelectorAll('.dashboard-section');
-    
-    menuItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // Remove active class from all items
-            menuItems.forEach(mi => mi.classList.remove('active'));
-            
-            // Add active class to clicked item
-            this.classList.add('active');
-            
-            // Hide all sections
-            sections.forEach(section => section.classList.remove('active'));
-            
-            // Show selected section
-            const sectionName = this.getAttribute('data-section');
-            const targetSection = document.getElementById(sectionName + '-section');
-            if (targetSection) {
-                targetSection.classList.add('active');
-            }
+// ============================================================
+//  PROFILE PICTURE UPLOAD
+// ============================================================
+const ppUpload = el('profilePicUpload');
+if (ppUpload) {
+    ppUpload.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.size > 2 * 1024 * 1024) { toast('File must be under 2MB', 'error'); return; }
+        if (!file.type.startsWith('image/')) { toast('Please choose an image file', 'error'); return; }
+        const reader = new FileReader();
+        reader.onload = ev => {
+            el('editProfilePic').src = ev.target.result;
+            ppUpload.dataset.newImage = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+// ============================================================
+//  SAVE EDIT PROFILE
+// ============================================================
+const editForm = el('editProfileForm');
+if (editForm) {
+    editForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Password change (optional)
+        const curPw = el('editCurrentPassword').value;
+        const newPw = el('editNewPassword').value;
+        const conPw = el('editConfirmPassword').value;
+        if (curPw || newPw || conPw) {
+            if (!curPw) { toast('Enter your current password', 'error'); return; }
+            if (curPw !== currentUser.password) { toast('Current password is incorrect', 'error'); return; }
+            if (!newPw || newPw.length < 6) { toast('New password must be at least 6 characters', 'error'); return; }
+            if (newPw !== conPw) { toast('Passwords do not match', 'error'); return; }
+            currentUser.password = newPw;
+        }
+
+        // Update fields
+        const map = {
+            editFullName:'fullName', editDob:'dob', editGender:'gender', editPhone:'phone',
+            editAddress:'address', editStudentId:'studentId', editBatch:'batch',
+            editDepartment:'department', editPassingYear:'passingYear', editProfession:'profession',
+            editOrganization:'organization', editDesignation:'designation',
+            editWorkLocation:'workLocation', editFacebook:'facebook', editLinkedin:'linkedin'
+        };
+        Object.entries(map).forEach(([inpId, key]) => {
+            const inp = el(inpId); if (inp) currentUser[key] = inp.value;
         });
-    });
-}
 
-// User Menu Dropdown
-function initializeUserMenu() {
-    const userMenuBtn = document.getElementById('userMenuBtn');
-    const userDropdown = document.getElementById('userDropdown');
-    const logoutBtn = document.getElementById('logoutBtn');
-    
-    userMenuBtn.addEventListener('click', function() {
-        userDropdown.classList.toggle('show');
-    });
-    
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
-            userDropdown.classList.remove('show');
+        // Profile picture
+        if (ppUpload && ppUpload.dataset.newImage) {
+            currentUser.profilePicture = ppUpload.dataset.newImage;
+            delete ppUpload.dataset.newImage;
         }
-    });
-    
-    // Logout functionality
-    logoutBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        if (confirm('Are you sure you want to logout?')) {
-            sessionStorage.removeItem('currentUser');
-            window.location.href = 'login.html';
-        }
-    });
-}
 
-// Edit Profile Form
-const editProfileForm = document.getElementById('editProfileForm');
-if (editProfileForm) {
-    editProfileForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Update current user data
-        currentUser.fullName = document.getElementById('editFullName').value;
-        currentUser.phone = document.getElementById('editPhone').value;
-        currentUser.address = document.getElementById('editAddress').value;
-        currentUser.profession = document.getElementById('editProfession').value;
-        currentUser.organization = document.getElementById('editOrganization').value;
-        currentUser.designation = document.getElementById('editDesignation').value;
-        currentUser.workLocation = document.getElementById('editWorkLocation').value;
-        
-        // Update in localStorage
-        const alumniUsers = JSON.parse(localStorage.getItem('alumniUsers')) || [];
-        const userIndex = alumniUsers.findIndex(u => u.id === currentUser.id);
-        
-        if (userIndex !== -1) {
-            alumniUsers[userIndex] = currentUser;
-            localStorage.setItem('alumniUsers', JSON.stringify(alumniUsers));
+        // Save to localStorage
+        const users = JSON.parse(localStorage.getItem('alumniUsers')) || [];
+        const idx = users.findIndex(u => u.email === currentUser.email);
+        if (idx !== -1) {
+            users[idx] = currentUser;
+            localStorage.setItem('alumniUsers', JSON.stringify(users));
             sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
-            
-            // Reload user data
             loadUserData();
-            
-            // Show success message
-            showDashboardAlert('Profile updated successfully!', 'success');
-            
-            // Switch to profile view
-            document.querySelector('[data-section="profile"]').click();
+            el('editCurrentPassword').value = '';
+            el('editNewPassword').value = '';
+            el('editConfirmPassword').value = '';
+            toast('Profile updated successfully!');
+            setTimeout(() => switchSection('profile'), 1000);
+        } else {
+            toast('Error saving profile. Please try again.', 'error');
         }
     });
 }
 
-// Load Alumni Directory
-function loadAlumniDirectory() {
-    const alumniUsers = JSON.parse(localStorage.getItem('alumniUsers')) || [];
-    const directoryGrid = document.getElementById('alumniDirectoryGrid');
-    
-    if (!directoryGrid) return;
-    
-    // Filter out current user
-    const otherAlumni = alumniUsers.filter(user => user.id !== currentUser.id);
-    
-    if (otherAlumni.length === 0) {
-        directoryGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #666;">No other alumni registered yet.</p>';
+const cancelBtn = el('cancelEditBtn');
+if (cancelBtn) cancelBtn.addEventListener('click', () => switchSection('profile'));
+
+// ============================================================
+//  EVENTS
+// ============================================================
+function loadEvents() {
+    const events = JSON.parse(localStorage.getItem('dafEvents')) || [];
+    const container = el('eventsContainer');
+    if (!container) return;
+
+    if (!events.length) {
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-times"></i><p>No events at the moment. Check back soon!</p></div>';
         return;
     }
-    
-    directoryGrid.innerHTML = '';
-    
-    otherAlumni.forEach(alumni => {
-        const card = createAlumniCard(alumni);
-        directoryGrid.appendChild(card);
-    });
-    
-    // Initialize directory filters
-    initializeDirectoryFilters(otherAlumni);
-    
-    // Initialize search
-    initializeAlumniSearch(otherAlumni);
+
+    events.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    container.innerHTML = events.map((ev, idx) => {
+        const d = ev.date ? new Date(ev.date + (ev.time ? ' ' + ev.time : ' 00:00')) : null;
+        const dayNum = d ? d.getDate() : '';
+        const monthStr = d ? d.toLocaleString('en', { month:'short' }) : '';
+        const yearStr = d ? d.getFullYear() : '';
+        const isPast = d && d < new Date();
+        const countdownHtml = !isPast && d ? `
+            <div class="ev-countdown" id="countdown-${idx}">
+                <div class="cd-box"><span class="cd-num" id="cd-d-${idx}">--</span><span class="cd-lbl">Days</span></div>
+                <div class="cd-sep">:</div>
+                <div class="cd-box"><span class="cd-num" id="cd-h-${idx}">--</span><span class="cd-lbl">Hours</span></div>
+                <div class="cd-sep">:</div>
+                <div class="cd-box"><span class="cd-num" id="cd-m-${idx}">--</span><span class="cd-lbl">Mins</span></div>
+                <div class="cd-sep">:</div>
+                <div class="cd-box"><span class="cd-num" id="cd-s-${idx}">--</span><span class="cd-lbl">Secs</span></div>
+            </div>` : '';
+        return `
+        <div class="event-card ${isPast ? 'past-event' : ''}" data-evtime="${d ? d.getTime() : ''}" data-idx="${idx}">
+            <div class="event-date-block">
+                <span class="ev-day">${dayNum}</span>
+                <span class="ev-month">${monthStr}</span>
+                <span class="ev-year">${yearStr}</span>
+            </div>
+            <div class="event-body">
+                <h3>${ev.title || ''}</h3>
+                ${ev.time ? `<p><i class="fas fa-clock"></i> ${ev.time}</p>` : ''}
+                ${ev.location ? `<p><i class="fas fa-map-marker-alt"></i> ${ev.location}</p>` : ''}
+                ${ev.description ? `<p class="ev-desc">${ev.description}</p>` : ''}
+                ${ev.link ? `<a href="${ev.link}" target="_blank" class="ev-link"><i class="fas fa-external-link-alt"></i> More Details</a>` : ''}
+                ${countdownHtml}
+            </div>
+            ${isPast ? '<span class="past-tag">Past</span>' : '<span class="upcoming-tag">Upcoming</span>'}
+        </div>`;
+    }).join('');
+
+    startCountdowns();
 }
 
-// Create Alumni Card
-function createAlumniCard(alumni) {
-    const card = document.createElement('div');
-    card.className = 'alumni-card';
-    card.setAttribute('data-batch', alumni.batch);
-    
-    card.innerHTML = `
-        <div class="alumni-avatar">
-            ${alumni.profilePic ? 
-                `<img src="${alumni.profilePic}" alt="${alumni.fullName}" style="width: 100%; height: 100%; object-fit: cover;">` :
-                '<i class="fas fa-user-graduate"></i>'
-            }
-        </div>
-        <h4>${alumni.fullName}</h4>
-        <p class="alumni-batch">${getBatchName(alumni.batch)}</p>
-        <p class="alumni-profession">${alumni.profession}</p>
-        <div class="alumni-social">
-            <a href="mailto:${alumni.email}" title="Email"><i class="fas fa-envelope"></i></a>
-            ${alumni.facebook ? `<a href="${alumni.facebook}" target="_blank" title="Facebook"><i class="fab fa-facebook"></i></a>` : ''}
-            ${alumni.linkedin ? `<a href="${alumni.linkedin}" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>` : ''}
-        </div>
-    `;
-    
-    return card;
-}
-
-// Directory Filters
-function initializeDirectoryFilters(alumni) {
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const alumniCards = document.querySelectorAll('.alumni-card');
-    
-    filterButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // Remove active class from all buttons
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            
-            // Add active class to clicked button
-            this.classList.add('active');
-            
-            const filter = this.getAttribute('data-filter');
-            
-            alumniCards.forEach(card => {
-                if (filter === 'all' || card.getAttribute('data-batch') === filter) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
+let _countdownTimer = null;
+function startCountdowns() {
+    if (_countdownTimer) clearInterval(_countdownTimer);
+    function tick() {
+        const now = Date.now();
+        document.querySelectorAll('.event-card[data-evtime]').forEach(card => {
+            const evTime = parseInt(card.dataset.evtime);
+            const idx = card.dataset.idx;
+            if (!evTime || isNaN(evTime)) return;
+            const diff = evTime - now;
+            if (diff <= 0) return;
+            const days  = Math.floor(diff / 86400000);
+            const hours = Math.floor((diff % 86400000) / 3600000);
+            const mins  = Math.floor((diff % 3600000) / 60000);
+            const secs  = Math.floor((diff % 60000) / 1000);
+            const pad = n => String(n).padStart(2, '0');
+            const dEl = document.getElementById(`cd-d-${idx}`);
+            const hEl = document.getElementById(`cd-h-${idx}`);
+            const mEl = document.getElementById(`cd-m-${idx}`);
+            const sEl = document.getElementById(`cd-s-${idx}`);
+            if (dEl) dEl.textContent = pad(days);
+            if (hEl) hEl.textContent = pad(hours);
+            if (mEl) mEl.textContent = pad(mins);
+            if (sEl) sEl.textContent = pad(secs);
         });
-    });
+    }
+    tick();
+    _countdownTimer = setInterval(tick, 1000);
 }
 
-// Alumni Search
-function initializeAlumniSearch(alumni) {
-    const searchInput = document.getElementById('searchAlumni');
-    if (!searchInput) return;
-    
-    searchInput.addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        const alumniCards = document.querySelectorAll('.alumni-card');
-        
-        alumniCards.forEach(card => {
-            const name = card.querySelector('h4').textContent.toLowerCase();
-            const profession = card.querySelector('.alumni-profession').textContent.toLowerCase();
-            
-            if (name.includes(searchTerm) || profession.includes(searchTerm)) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-    });
+// ============================================================
+//  MESSAGES
+// ============================================================
+function getUserMessages() {
+    const all = JSON.parse(localStorage.getItem('dafUserMessages')) || [];
+    return all.filter(m => m.to === currentUser.email);
 }
 
-// Helper Functions
-function getBatchName(batch) {
-    const batchNames = {
-        'dakhil2020': 'Dakhil 2020',
-        'alim2022': 'Alim 2022'
-    };
-    return batchNames[batch] || batch;
-}
-
-function formatDate(dateString) {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-}
-
-function capitalizeFirst(str) {
-    if (!str) return 'N/A';
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-function showDashboardAlert(message, type) {
-    const alert = document.createElement('div');
-    alert.className = `alert alert-${type}`;
-    alert.style.position = 'fixed';
-    alert.style.top = '90px';
-    alert.style.right = '20px';
-    alert.style.zIndex = '9999';
-    alert.style.minWidth = '300px';
-    alert.innerHTML = `
-        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
-        <span>${message}</span>
-    `;
-    
-    document.body.appendChild(alert);
-    
-    setTimeout(() => {
-        alert.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => alert.remove(), 300);
-    }, 3000);
-}
-
-// Add some sample data if none exists (for demo purposes)
-if (!localStorage.getItem('alumniUsers') || JSON.parse(localStorage.getItem('alumniUsers')).length === 0) {
-    const sampleUsers = [
-        {
-            id: '1',
-            fullName: 'Mohammad Rahim',
-            email: 'rahim@example.com',
-            phone: '+880 1234-567890',
-            dob: '1995-01-15',
-            gender: 'male',
-            batch: 'dakhil2020',
-            studentId: '20001',
-            passingYear: '2020',
-            department: 'Science',
-            profession: 'Software Engineer',
-            organization: 'Tech Corp',
-            designation: 'Senior Developer',
-            workLocation: 'Dhaka, Bangladesh',
-            password: 'password123',
-            registrationDate: new Date().toISOString(),
-            status: 'active'
-        },
-        {
-            id: '2',
-            fullName: 'Fatima Khatun',
-            email: 'fatima@example.com',
-            phone: '+880 1234-567891',
-            dob: '1996-05-20',
-            gender: 'female',
-            batch: 'dakhil2020',
-            studentId: '20002',
-            passingYear: '2020',
-            department: 'Arts',
-            profession: 'Teacher',
-            organization: 'ABC School',
-            designation: 'Senior Teacher',
-            workLocation: 'Dhaka, Bangladesh',
-            password: 'password123',
-            registrationDate: new Date().toISOString(),
-            status: 'active'
-        }
-    ];
-    
-    // Only add if current user is logged in (don't interfere with real registrations)
-    if (currentUser) {
-        const existingUsers = JSON.parse(localStorage.getItem('alumniUsers')) || [];
-        if (!existingUsers.some(u => u.id === currentUser.id)) {
-            existingUsers.push(currentUser);
-        }
-        sampleUsers.forEach(user => {
-            if (!existingUsers.some(u => u.email === user.email)) {
-                existingUsers.push(user);
-            }
-        });
-        localStorage.setItem('alumniUsers', JSON.stringify(existingUsers));
+function updateMsgBadge() {
+    const msgs = getUserMessages();
+    const unread = msgs.filter(m => !m.read).length;
+    const badge = el('msgBadge');
+    if (!badge) return;
+    if (unread > 0) {
+        badge.textContent = unread;
+        badge.style.display = 'inline-block';
+    } else {
+        badge.style.display = 'none';
     }
 }
 
-console.log('📊 Dashboard loaded for:', currentUser?.fullName);
+function markMessagesRead() {
+    const all = JSON.parse(localStorage.getItem('dafUserMessages')) || [];
+    let changed = false;
+    all.forEach(m => { if (m.to === currentUser.email && !m.read) { m.read = true; changed = true; } });
+    if (changed) {
+        localStorage.setItem('dafUserMessages', JSON.stringify(all));
+        updateMsgBadge();
+    }
+}
+
+function loadMessages() {
+    const msgs = getUserMessages();
+    const container = el('messagesContainer');
+    if (!container) return;
+
+    if (!msgs.length) {
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>No messages yet.</p></div>';
+        return;
+    }
+
+    msgs.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    container.innerHTML = msgs.map(m => `
+        <div class="msg-card ${m.read ? '' : 'msg-unread'}">
+            <div class="msg-header">
+                <div class="msg-from">
+                    <i class="fas fa-user-shield"></i>
+                    <strong>Admin - DAF</strong>
+                </div>
+                <span class="msg-date">${fmtDate(m.date)}</span>
+                ${!m.read ? '<span class="msg-new-badge">New</span>' : ''}
+            </div>
+            <div class="msg-subject">${m.subject || 'No Subject'}</div>
+            <div class="msg-body">${m.message || ''}</div>
+        </div>
+    `).join('');
+}
+
+// ============================================================
+//  INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+    loadUserData();
+    loadEvents();
+    loadMessages();
+});
