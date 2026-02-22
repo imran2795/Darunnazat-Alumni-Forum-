@@ -201,19 +201,18 @@ contactForm.addEventListener('submit', (e) => {
         return;
     }
 
-    // Save to localStorage for admin inbox
-    const msgs = JSON.parse(localStorage.getItem('dafContactMessages')) || [];
-    msgs.unshift({
+    // Save to Firestore messages collection
+    const newMsg = {
         id: Date.now().toString(),
         name, email, batch, message,
         sentAt: new Date().toISOString(),
         read: false
-    });
-    localStorage.setItem('dafContactMessages', JSON.stringify(msgs));
-    
+    };
+    db.collection('messages').doc(newMsg.id).set(newMsg).catch(e => console.warn(e));
+
     // Success message
     alert(`ধন্যবাদ ${name}! আপনার বার্তা সফলভাবে পাঠানো হয়েছে। আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।`);
-    
+
     // Reset form
     contactForm.reset();
 });
@@ -237,33 +236,34 @@ function animateCountTo(el, newVal) {
     }, 30);
 }
 
-function updateLiveStats() {
-    const users = JSON.parse(localStorage.getItem('alumniUsers')) || [];
-    const events = JSON.parse(localStorage.getItem('dafEvents')) || [];
-    const total      = users.length;
-    const dakhil     = users.filter(u => u.batch === 'dakhil2020').length;
-    const alim       = users.filter(u => u.batch === 'alim2022').length;
-    const evCount    = events.length;
-    const professions = new Set(users.map(u => (u.profession || '').trim().toLowerCase()).filter(Boolean)).size;
+async function updateLiveStats() {
+    try {
+        const [alumniSnap, eventsSnap] = await Promise.all([
+            db.collection('alumni').get(),
+            db.collection('events').get(),
+        ]);
+        const users  = alumniSnap.docs.map(d => d.data());
+        const events = eventsSnap.docs.map(d => d.data());
+        const total      = users.length;
+        const dakhil     = users.filter(u => u.batch === 'dakhil2020').length;
+        const alim       = users.filter(u => u.batch === 'alim2022').length;
+        const evCount    = events.length;
+        const professions = new Set(users.map(u => (u.profession || '').trim().toLowerCase()).filter(Boolean)).size;
 
-    // About section stats
-    animateCountTo(document.getElementById('liveStatTotal'),  total);
-    animateCountTo(document.getElementById('liveStatDakhil'), dakhil);
-    animateCountTo(document.getElementById('liveStatAlim'),   alim);
-    animateCountTo(document.getElementById('liveStatEvents'), evCount);
+        animateCountTo(document.getElementById('liveStatTotal'),  total);
+        animateCountTo(document.getElementById('liveStatDakhil'), dakhil);
+        animateCountTo(document.getElementById('liveStatAlim'),   alim);
+        animateCountTo(document.getElementById('liveStatEvents'), evCount);
 
-    // Our Alumni section stats
-    animateCountTo(document.getElementById('alumSecTotal'),      total);
-    animateCountTo(document.getElementById('alumSecDakhil'),     dakhil);
-    animateCountTo(document.getElementById('alumSecAlim'),       alim);
-    animateCountTo(document.getElementById('alumSecProfessions'), professions);
+        animateCountTo(document.getElementById('alumSecTotal'),       total);
+        animateCountTo(document.getElementById('alumSecDakhil'),      dakhil);
+        animateCountTo(document.getElementById('alumSecAlim'),        alim);
+        animateCountTo(document.getElementById('alumSecProfessions'), professions);
+    } catch(e) { console.warn('Stats error:', e); }
 }
 
-// Update on load and every 5 seconds
 updateLiveStats();
-setInterval(updateLiveStats, 5000);
-// Also update when another tab/window changes localStorage
-window.addEventListener('storage', updateLiveStats);
+setInterval(updateLiveStats, 30000);
 
 // Gallery Item Click (Placeholder for modal functionality)
 document.querySelectorAll('.gallery-item').forEach(item => {
@@ -334,15 +334,15 @@ document.querySelectorAll('img').forEach(img => {
 });
 
 // Update Alumni Stats dynamically
-function updateAlumniStats() {
-    const alumniUsers = JSON.parse(localStorage.getItem('alumniUsers')) || [];
-    const totalAlumni = alumniUsers.length;
-    
-    // Update total alumni count
-    const statCards = document.querySelectorAll('.stat-card h3');
-    if (statCards.length > 0) {
-        statCards[0].textContent = totalAlumni > 0 ? totalAlumni + '+' : '0';
-    }
+async function updateAlumniStats() {
+    try {
+        const snap = await db.collection('alumni').get();
+        const totalAlumni = snap.size;
+        const statCards = document.querySelectorAll('.stat-card h3');
+        if (statCards.length > 0) {
+            statCards[0].textContent = totalAlumni > 0 ? totalAlumni + '+' : '0';
+        }
+    } catch(e) { console.warn(e); }
 }
 
 // Call on page load
@@ -356,11 +356,15 @@ console.log('%cদাখিল ২০২০ | আলিম ২০২২', 'color
 console.log('%cWebsite developed with ❤️', 'color: #ff6b35; font-size: 14px;');
 
 // ===== LOAD EVENTS FROM ADMIN =====
-(function loadWebsiteEvents() {
+(async function loadWebsiteEvents() {
     const grid = document.getElementById('eventsGrid');
     if (!grid) return;
 
-    const events = JSON.parse(localStorage.getItem('dafEvents')) || [];
+    let events = [];
+    try {
+        const snap = await db.collection('events').get();
+        events = snap.docs.map(d => d.data()).sort((a,b) => new Date(a.date) - new Date(b.date));
+    } catch(e) { console.warn(e); }
     const MONTHS = ['January','February','March','April','May','June',
                     'July','August','September','October','November','December'];
     const today = new Date(); today.setHours(0,0,0,0);
@@ -447,56 +451,42 @@ console.log('%cWebsite developed with ❤️', 'color: #ff6b35; font-size: 14px;
     setInterval(updateCountdowns, 1000);
 })();
 
-// ===== LOAD GALLERY FROM ADMIN =====
-// ===== LOAD GALLERY FROM ADMIN (IndexedDB) =====
-(function() {
+// ===== LOAD GALLERY FROM ADMIN (Firestore) =====
+(async function() {
     const grid = document.getElementById('galleryGrid');
     if (!grid) return;
-
-    const DB = { name: 'dafGalleryDB', version: 1, store: 'photos' };
-    function openDB() {
-        return new Promise((resolve, reject) => {
-            const req = indexedDB.open(DB.name, DB.version);
-            req.onupgradeneeded = e => {
-                const db = e.target.result;
-                if (!db.objectStoreNames.contains(DB.store))
-                    db.createObjectStore(DB.store, { keyPath: 'id' });
-            };
-            req.onsuccess = e => resolve(e.target.result);
-            req.onerror   = e => reject(e.target.error);
-        });
+    let photos = [];
+    try {
+        const snap = await db.collection('gallery').orderBy('addedAt').get();
+        photos = snap.docs.map(d => d.data());
+    } catch(e) { console.warn(e); }
+    if (photos.length === 0) {
+        grid.innerHTML = `
+            <div style="grid-column:1/-1;text-align:center;padding:50px 20px;color:#888;">
+                <i class="fas fa-images" style="font-size:40px;margin-bottom:12px;display:block;color:#ccc;"></i>
+                <p style="font-size:15px;">No photos in gallery yet. Check back soon!</p>
+            </div>`;
+        return;
     }
-
-    openDB().then(db => {
-        const req = db.transaction(DB.store,'readonly').objectStore(DB.store).getAll();
-        req.onsuccess = e => {
-            const photos = (e.target.result || []).sort((a,b)=> new Date(a.addedAt)-new Date(b.addedAt));
-            if (photos.length === 0) {
-                grid.innerHTML = `
-                    <div style="grid-column:1/-1;text-align:center;padding:50px 20px;color:#888;">
-                        <i class="fas fa-images" style="font-size:40px;margin-bottom:12px;display:block;color:#ccc;"></i>
-                        <p style="font-size:15px;">No photos in gallery yet. Check back soon!</p>
-                    </div>`;
-                return;
-            }
-            grid.innerHTML = photos.map(p => `
-                <div class="gallery-item">
-                    <img src="${p.url}" alt="${p.caption || 'Gallery Photo'}" loading="lazy"
-                         onerror="this.parentElement.style.display='none'">
-                    <div class="gallery-overlay">
-                        <div class="gallery-icon"><i class="fas fa-search-plus"></i></div>
-                        ${p.caption ? `<p style="color:#fff;font-size:13px;margin-top:6px;text-align:center;padding:0 8px;">${p.caption}</p>` : ''}
-                    </div>
-                </div>`).join('');
-        };
-        req.onerror = () => {};
-    }).catch(() => {});
+    grid.innerHTML = photos.map(p => `
+        <div class="gallery-item">
+            <img src="${p.url}" alt="${p.caption || 'Gallery Photo'}" loading="lazy"
+                 onerror="this.parentElement.style.display='none'">
+            <div class="gallery-overlay">
+                <div class="gallery-icon"><i class="fas fa-search-plus"></i></div>
+                ${p.caption ? `<p style="color:#fff;font-size:13px;margin-top:6px;text-align:center;padding:0 8px;">${p.caption}</p>` : ''}
+            </div>
+        </div>`).join('');
 })();
 
 
 // ===== CONTACT INFO LOADER =====
-(function loadContactContent() {
-    const d = JSON.parse(localStorage.getItem('dafContactInfo')) || {};
+(async function loadContactContent() {
+    let d = {};
+    try {
+        const snap = await db.collection('settings').doc('contact').get();
+        if (snap.exists) d = snap.data();
+    } catch(e) { console.warn(e); }
     const lang = localStorage.getItem('dafLang') || 'en';
 
     // Address
@@ -547,8 +537,12 @@ console.log('%cWebsite developed with ❤️', 'color: #ff6b35; font-size: 14px;
 })();
 
 // ===== ABOUT US LOADER =====
-(function loadAboutContent() {
-    const d = JSON.parse(localStorage.getItem('dafAboutContent')) || {};
+(async function loadAboutContent() {
+    let d = {};
+    try {
+        const snap = await db.collection('settings').doc('about').get();
+        if (snap.exists) d = snap.data();
+    } catch(e) { console.warn(e); }
     const lang = localStorage.getItem('dafLang') || 'en';
 
     function setText(id, en, bn) {
@@ -604,12 +598,16 @@ console.log('%cWebsite developed with ❤️', 'color: #ff6b35; font-size: 14px;
 })();
 
 // ===== ANNOUNCEMENT BAR =====
-(function loadAnnouncementBar() {
+(async function loadAnnouncementBar() {
     const bar      = document.getElementById('announcementBar');
     const itemsDiv = document.getElementById('annBarItems');
     if (!bar || !itemsDiv) return;
 
-    const list = JSON.parse(localStorage.getItem('dafAnnouncements')) || [];
+    let list = [];
+    try {
+        const snap = await db.collection('announcements').get();
+        list = snap.docs.map(d => d.data());
+    } catch(e) { console.warn(e); }
     if (list.length === 0) return;
 
     // Build ticker items — repeat list 3× so scrolling looks continuous
@@ -632,9 +630,12 @@ console.log('%cWebsite developed with ❤️', 'color: #ff6b35; font-size: 14px;
     document.body.classList.add('has-announcement');
 })();
 
-function showAnnModal(id) {
-    const list = JSON.parse(localStorage.getItem('dafAnnouncements')) || [];
-    const a = list.find(x => x.id === id);
+async function showAnnModal(id) {
+    let a;
+    try {
+        const snap = await db.collection('announcements').doc(id).get();
+        if (snap.exists) a = snap.data();
+    } catch(e) { console.warn(e); }
     if (!a) return;
     document.getElementById('annDetailTitle').textContent = a.title || '';
     document.getElementById('annDetailMsg').textContent   = a.msg   || '';
@@ -658,8 +659,8 @@ function showAnnModal(id) {
 }
 
 
-// ===== HERO SLIDESHOW LOADER =====
-(function() {
+// ===== HERO SLIDESHOW LOADER (Firestore) =====
+(async function() {
     const wrap = document.getElementById('heroSlidesWrap');
     if (!wrap) return;
 
@@ -668,90 +669,80 @@ function showAnnModal(id) {
     const nextBtn  = document.getElementById('heroNext');
     const dotsWrap = document.getElementById('heroDots');
 
-    const HNAME = 'dafHeroDB', HSTORE = 'slides', HVER = 1;
+    let slides = [];
+    try {
+        const snap = await db.collection('heroSlides').orderBy('order').get();
+        slides = snap.docs.map(d => d.data());
+    } catch(e) { console.warn(e); }
 
-    function openHDB() {
-        return new Promise((res, rej) => {
-            const r = indexedDB.open(HNAME, HVER);
-            r.onupgradeneeded = e => {
-                const db = e.target.result;
-                if (!db.objectStoreNames.contains(HSTORE))
-                    db.createObjectStore(HSTORE, { keyPath: 'id' });
-            };
-            r.onsuccess = e => res(e.target.result);
-            r.onerror   = e => rej(e.target.error);
+    // If no slides in Firestore, use default images 1-5
+    if (slides.length === 0) {
+        slides = [
+            { url: 'images/1.jpeg' },
+            { url: 'images/2.jpeg' },
+            { url: 'images/3.jpeg' },
+            { url: 'images/4.jpeg' },
+            { url: 'images/5.jpeg' }
+        ];
+    }
+
+    // Remove all existing static slides
+    wrap.querySelectorAll('.hero-slide').forEach(s => s.remove());
+
+    // Build slide divs
+    slides.forEach((s, i) => {
+        const d = document.createElement('div');
+        d.className = 'hero-slide' + (i===0 ? ' active' : '');
+        d.style.backgroundImage = `url('${s.url}')`;
+        wrap.appendChild(d);
+    });
+
+    const all = wrap.querySelectorAll('.hero-slide');
+    let idx = 0, timer = null;
+
+    // Build dots
+    if (dotsWrap) {
+        dotsWrap.innerHTML = '';
+        all.forEach((_,i) => {
+            const btn = document.createElement('button');
+            btn.className = 'hero-dot' + (i===0?' active':'');
+            btn.setAttribute('aria-label','Go to slide '+(i+1));
+            btn.addEventListener('click', () => goTo(i));
+            dotsWrap.appendChild(btn);
         });
     }
 
-    openHDB().then(db => {
-        const req = db.transaction(HSTORE,'readonly').objectStore(HSTORE).getAll();
-        req.onsuccess = e => {
-            const slides = (e.target.result||[]).sort((a,b)=>a.order-b.order);
-            if (slides.length === 0) return; // keep default image
+    function goTo(n) {
+        all[idx].classList.remove('active');
+        if (dotsWrap) dotsWrap.children[idx].classList.remove('active');
+        idx = (n + all.length) % all.length;
+        all[idx].classList.add('active');
+        if (dotsWrap) dotsWrap.children[idx].classList.add('active');
+        resetTimer();
+    }
 
-            // Remove default static slide
-            if (defSlide) defSlide.remove();
+    function resetTimer() {
+        clearInterval(timer);
+        if (all.length > 1) timer = setInterval(() => goTo(idx+1), 5000);
+    }
 
-            // Build slide divs
-            slides.forEach((s, i) => {
-                const d = document.createElement('div');
-                d.className = 'hero-slide' + (i===0 ? ' active' : '');
-                d.style.backgroundImage = `url('${s.url}')`;
-                wrap.appendChild(d);
-            });
+    if (prevBtn) prevBtn.addEventListener('click', () => goTo(idx-1));
+    if (nextBtn) nextBtn.addEventListener('click', () => goTo(idx+1));
 
-            const all = wrap.querySelectorAll('.hero-slide');
-            let idx = 0, timer = null;
+    if (all.length <= 1) {
+        if (prevBtn) prevBtn.classList.add('hidden');
+        if (nextBtn) nextBtn.classList.add('hidden');
+        if (dotsWrap) dotsWrap.style.display = 'none';
+    }
 
-            // Build dots
-            if (dotsWrap) {
-                dotsWrap.innerHTML = '';
-                all.forEach((_,i) => {
-                    const btn = document.createElement('button');
-                    btn.className = 'hero-dot' + (i===0?' active':'');
-                    btn.setAttribute('aria-label','Go to slide '+(i+1));
-                    btn.addEventListener('click', () => goTo(i));
-                    dotsWrap.appendChild(btn);
-                });
-            }
+    document.addEventListener('keydown', e => {
+        const hero = document.getElementById('home');
+        if (!hero) return;
+        const rect = hero.getBoundingClientRect();
+        if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+        if (e.key === 'ArrowLeft')  goTo(idx-1);
+        if (e.key === 'ArrowRight') goTo(idx+1);
+    });
 
-            function goTo(n) {
-                all[idx].classList.remove('active');
-                if (dotsWrap) dotsWrap.children[idx].classList.remove('active');
-                idx = (n + all.length) % all.length;
-                all[idx].classList.add('active');
-                if (dotsWrap) dotsWrap.children[idx].classList.add('active');
-                resetTimer();
-            }
-
-            function resetTimer() {
-                clearInterval(timer);
-                if (all.length > 1) timer = setInterval(() => goTo(idx+1), 5000);
-            }
-
-            // Arrow buttons
-            if (prevBtn) prevBtn.addEventListener('click', () => goTo(idx-1));
-            if (nextBtn) nextBtn.addEventListener('click', () => goTo(idx+1));
-
-            // Show/hide arrows & dots
-            if (all.length <= 1) {
-                if (prevBtn) prevBtn.classList.add('hidden');
-                if (nextBtn) nextBtn.classList.add('hidden');
-                if (dotsWrap) dotsWrap.style.display = 'none';
-            }
-
-            // Keyboard navigation
-            document.addEventListener('keydown', e => {
-                const hero = document.getElementById('home');
-                if (!hero) return;
-                const rect = hero.getBoundingClientRect();
-                if (rect.bottom < 0 || rect.top > window.innerHeight) return;
-                if (e.key === 'ArrowLeft')  goTo(idx-1);
-                if (e.key === 'ArrowRight') goTo(idx+1);
-            });
-
-            resetTimer();
-        };
-        req.onerror = () => {};
-    }).catch(() => {});
+    resetTimer();
 })();
